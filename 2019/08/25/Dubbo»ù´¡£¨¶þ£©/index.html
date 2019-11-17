@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/',
+      path: ''
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="上一篇对Dubbo的架构、注册中心还有Dubbo SPI机制做了初步的了解。这里将接着来了解下服务提供者和消费者。 一、服务提供者与服务消费者简介1.架构图浅析这两者顾名思义就是一个发布服务一个订阅服务的。可以再看下Dubbo的架构图：  可以看出，Provider先基于Container启动，然后向注册中心发布服务，之后服Consumer再向注册中心订阅服务，注册中心再把已注册的服务列表发给Co">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dubbo基础（二）">
+<meta property="og:url" content="https://weihong363.github.io/2019/08/25/Dubbo基础（二）/index.html">
+<meta property="og:site_name" content="光头王的Blog">
+<meta property="og:description" content="上一篇对Dubbo的架构、注册中心还有Dubbo SPI机制做了初步的了解。这里将接着来了解下服务提供者和消费者。 一、服务提供者与服务消费者简介1.架构图浅析这两者顾名思义就是一个发布服务一个订阅服务的。可以再看下Dubbo的架构图：  可以看出，Provider先基于Container启动，然后向注册中心发布服务，之后服Consumer再向注册中心订阅服务，注册中心再把已注册的服务列表发给Co">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://dubbo.apache.org/docs/zh-cn/user/sources/images/dubbo-architecture.jpg">
+<meta property="og:updated_time" content="2019-08-27T04:00:30.600Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dubbo基础（二）">
+<meta name="twitter:description" content="上一篇对Dubbo的架构、注册中心还有Dubbo SPI机制做了初步的了解。这里将接着来了解下服务提供者和消费者。 一、服务提供者与服务消费者简介1.架构图浅析这两者顾名思义就是一个发布服务一个订阅服务的。可以再看下Dubbo的架构图：  可以看出，Provider先基于Container启动，然后向注册中心发布服务，之后服Consumer再向注册中心订阅服务，注册中心再把已注册的服务列表发给Co">
+<meta name="twitter:image" content="http://dubbo.apache.org/docs/zh-cn/user/sources/images/dubbo-architecture.jpg">
+  <link rel="canonical" href="https://weihong363.github.io/2019/08/25/Dubbo基础（二）/">
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Dubbo基础（二） | 光头王的Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">光头王的Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+    <ul id="menu" class="menu">
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+    </ul>
+    
+
+</nav>
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/08/25/Dubbo基础（二）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ironion">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="光头王的Blog">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">Dubbo基础（二）
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-25 10:49:57" itemprop="dateCreated datePublished" datetime="2019-08-25T10:49:57+08:00">2019-08-25</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-08-27 12:00:30" itemprop="dateModified" datetime="2019-08-27T12:00:30+08:00">2019-08-27</time>
+              </span>
+            
+          
+
+          <br>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>上一篇对Dubbo的架构、注册中心还有Dubbo SPI机制做了初步的了解。这里将接着来了解下服务提供者和消费者。</p>
+<h3 id="一、服务提供者与服务消费者简介"><a href="#一、服务提供者与服务消费者简介" class="headerlink" title="一、服务提供者与服务消费者简介"></a>一、服务提供者与服务消费者简介</h3><h4 id="1-架构图浅析"><a href="#1-架构图浅析" class="headerlink" title="1.架构图浅析"></a>1.架构图浅析</h4><p>这两者顾名思义就是一个发布服务一个订阅服务的。可以再看下Dubbo的架构图：</p>
+<p><img src="http://dubbo.apache.org/docs/zh-cn/user/sources/images/dubbo-architecture.jpg" alt></p>
+<p>可以看出，Provider先基于Container启动，然后向注册中心发布服务，之后服Consumer再向注册中心订阅服务，注册中心再把已注册的服务列表发给Consumer。</p>
+<p>Consumer启动时会去检测依赖的服务可不可用，那如果Provider没注册上，会抛出异常，阻止初始化完成。把dubbo:reference标签里的check属性值设为false即可在启动时忽略这个检查。</p>
+<a id="more"></a>
+
+<p>因为注册中心和提供者，消费者之间都是用长连接相连的，所以一旦提供者某个接口发生变动，注册中心会及时地将最新的接口信息发送给消费者。</p>
+<p>而消费者与提供者之间的请求（invoke）是不通过注册中心的，所以，只要完成服务的发布订阅，注册中心就算挂了也不影响提供者和消费者之间的交互。</p>
+<h4 id="2-负载均衡配置"><a href="#2-负载均衡配置" class="headerlink" title="2.负载均衡配置"></a>2.负载均衡配置</h4><p>因为Dubbo是具备负载均衡功能的，所以消费者面对多台提供者会基于负载均衡算法（Dubbo有四种负载均衡实现：权重随机算法、最少活跃数调用算法、一致性哈希算法、加权轮训算法，可以在）调用其中一台。反之亦然，也就是提供者和消费者都能做负载均衡。相关配置的示例如下：</p>
+<blockquote>
+<p>服务提供者接口级别</p>
+<p>&lt;dubbo:service interface=”…” loadbalance=”roundrobin” /&gt;</p>
+<p>服务消费者接口级别</p>
+<p>&lt;dubbo:reference interface=”…” loadbalance=”roundrobin” /&gt;</p>
+<p>服务提供者方法级别</p>
+<p>&lt;dubbo:service interface=”…”&gt;</p>
+<p>   &lt;dubbo:method name=”hello” loadbalance=”roundrobin”/&gt;</p>
+<p></p>
+<p>服务消费者方法级别</p>
+<p>&lt;dubbo:reference interface=”…”&gt;</p>
+<p>   &lt;dubbo:method name=”hello” loadbalance=”roundrobin”/&gt;</p>
+<p></p>
+</blockquote>
+<p>这几种级别的优先级依次为：</p>
+<ol>
+<li>服务消费者方法级别配置。</li>
+<li>服务消费者接口级别配置。</li>
+<li>服务提供者方法级别配置。</li>
+<li>服务提供者接口级别配置。</li>
+</ol>
+<p>提到负载均衡，这里再讲下集群容错和服务路由，这3个感觉概念上有些相似，都是说从多个服务提供者中调一个来用。下面大概讲下他们之间的区别吧：</p>
+<ol>
+<li>负载均衡，就是比如说在一个集群下有多个服务器，提供同样的服务。那么有请求过来肯定不能只发到一台上，而且每台机子性能也不一样，也不能死板的去均摊请求，这时候就要根据一些条件通过算法来保证每台服务器都能最合理地收到请求；</li>
+<li>集群容错，跟负载均衡一样也是作用于集群的，不过它的重点在于容错，就是发请求出异常了要怎么处理，看是要做重试，还是定时重发，还是快速失败等，有5种机制，后面再扩展开来说；</li>
+<li>服务路由，路由嘛，就是选路和转发，服务路由的重点就是在于选路这里，确定访问到<strong>哪些</strong>服务提供者比较高效，对于服务路由，Dubbo也给出了3种机制，后面再扩展开来说；</li>
+</ol>
+<p>总结下这三种机制（这里直接引用官网的说法了）。Dubbo中，先通过路由，从多个 Provider 中按照路由规则，选出一个子集。再根据负载均衡从子集中选出一个 Provider 进行本次调用。如果调用失败了，根据集群容错策略，进行重试或定时重发或快速失败等。 可以看到Dubbo中的路由，负载均衡和集群容错发生在一次RPC调用的不同阶段。最先是路由，然后是负载均衡，最后是集群容错。 </p>
+<h4 id="3-服务导出和服务引入"><a href="#3-服务导出和服务引入" class="headerlink" title="3.服务导出和服务引入"></a>3.服务导出和服务引入</h4><h4 id="3-1-服务导出"><a href="#3-1-服务导出" class="headerlink" title="3.1 服务导出"></a>3.1 服务导出</h4><p>服务导出嘛，就是把服务导出到注册中心上的过程。这个过程起始于Spring容器发布刷新事件，这个事件被Dubbo接收到之后，就开始导出服务。整个操作过程可以分成三部分：</p>
+<ol>
+<li>前置工作，主要就是检查参数，然后拿这些参数来组装URL；</li>
+<li>导出服务，这个操作包括两部分：把服务导出到本地（也就是JVM）、把服务导出到远程；</li>
+<li>在注册中心注册服务，这个操作是用于服务发现的。虽然可以通过服务直连，绕过注册中心，不过这样不利于服务治理，就是说这一步虽然不是必须的，但是建议要做。</li>
+</ol>
+<p>下面扩展下上述的3部分操作：</p>
+<h4 id="3-1-1-前置工作"><a href="#3-1-1-前置工作" class="headerlink" title="3.1.1 前置工作"></a>3.1.1 前置工作</h4><p><strong>1）检查参数</strong></p>
+<ol>
+<li><p>检测<dubbolservice>标签interface属性是否合法，不合法则抛出异常；</dubbolservice></p>
+</li>
+<li><p>检测ProviderConfig、ApplicationConfig等属性配置类的对象是否为空，为空则尝试从其他配置类的对象中获取相应的实例；</p>
+</li>
+<li><p>检测并处理泛化服务（就是提供泛化接口调用的服务，泛化接口调用最直接的表现就是服务消费者不需要有任何接口的实现，就能完成服务的调用。主要用于服务器端没有API接口及模型类元的情况，参数及返回值中的所有POJO均用Map表示，通常用于框架集成,比如：实现一个通用的远程服务Mock框架，可通过实现GenericService接口处理所有服务请求。）和普通服务类;</p>
+</li>
+<li><p>检测本地存根（所谓本地存根就是：远程服务后，客户端通常只剩下接口，而实现全在服务器端，但提供方有些时候想在客户端也执行部分逻辑，比如：做 ThreadLocal 缓存，提前验证参数，调用失败后伪造容错数据等等，此时就需要在 API 中带上 Stub，客户端生成 Proxy 实例，会把 Proxy 通过构造函数传给 Stub 1，然后把 Stub 暴露给用户，Stub 可以决定要不要去调 Proxy。</p>
+</li>
+<li><p>对ApplicationCOnfig、RegistryConfig等配置类进行检测，若为空则尝试创建，无法创建就抛出异常。</p>
+</li>
+</ol>
+<p>PS、多协议多注册中心导出服务：<br>因为Dubbo是支持多协议导出服务，也支持向多注册中心注册服务的，相关的操作如下：</p>
+<ol>
+<li>加载注册中心链接：检测是否存在注册中心配置类，不存在则抛出异常；构建参数映射集合（Map）；构建注册中心链接列表（urls）；遍历链接列表，并根据条件决定是否将它加到注册List（registryList）中；</li>
+<li>遍历 ProtocolConfig 集合来导出每个服务（导出的过程中会把服务注册到注册中心）。</li>
+</ol>
+<p><strong>2）组装URL</strong></p>
+<p>确保配置都没问题后，开始组装用于发送请求的URL。</p>
+<ol>
+<li>将配置的对象信息存到一个Map里，然后通过反射获取目标对象的getter方法，通过该调用方法来获取属性值，解析该方法名来获取属性名；</li>
+<li>获取上下文路径、主机名、和端口号等信息加上组装好的Map以及Map的内容，传给URL的构造方法（这里指的是com.alibaba.dubbo.common.URL）创建URL对象。</li>
+</ol>
+<h4 id="3-1-2-导出服务"><a href="#3-1-2-导出服务" class="headerlink" title="3.1.2 导出服务"></a>3.1.2 导出服务</h4><p>在上一步检查完配置，并组好URL后，就可以开始导出服务了。这里的服务导出分为两部分：导出到本地（JVM）和导出到远程。这在调doExportUrlsFor1Protocol方法解析URL时会去判断URL中scope这个参数的值，若scope等于none，则不导出服务；若scope != remote，则导出到本地；若scope != local，则导出到远程。（吐槽一句，这里都用不等看起来好奇怪，都用等于不好吗，不过源码这么写的也没办法）</p>
+<p>无论是服务要导出到本地还是到远程，都需要先创建一个Invoker模型，这东西对服务的调用至关重要。</p>
+<blockquote>
+<p>Invoker 是实体域，它是 Dubbo 的核心模型，其它模型都向它靠扰，或转换成它，它代表一个可执行体，可向它发起 invoke 调用，它有可能是一个本地的实现，也可能是一个远程的实现，也可能一个集群实现。</p>
+</blockquote>
+<p>Invoker是由ProxyFactory（它在Dubbo的实现类是JavassistProxyFactory）创建而来。这里不分析源码了，它的创建过程引用下官方的说法：</p>
+<blockquote>
+<p>JavassistProxyFactory 创建了一个继承自 AbstractProxyInvoker 类的匿名对象，并覆写了抽象方法 doInvoke。覆写后的 doInvoke 逻辑比较简单，仅是将调用请求转发给了 Wrapper 类的 invokeMethod 方法。Wrapper 用于“包裹”目标类，Wrapper 是一个抽象类，仅可通过 getWrapper(Class) 方法创建子类。在创建 Wrapper 子类的过程中，子类代码生成逻辑会对 getWrapper 方法传入的 Class 对象进行解析，拿到诸如类方法，类成员变量等信息。以及生成 invokeMethod 方法代码和其他一些方法代码。代码生成完毕后，通过 Javassist 生成 Class 对象，最后再通过反射创建 Wrapper 实例。</p>
+</blockquote>
+<p><strong>1）导出服务到本地</strong><br>在解析URL后，确定服务是要导出到本地，就重新创建一个新的URL（协议头、主机名、端口都改成新的），然后创建Invoker，传给InjvmProtocol的export方法导出服务。</p>
+<p><strong>1）导出服务到远程</strong><br>导出到远程会比本地复杂一些，因为它还得去注册服务。大概的流程就是：</p>
+<ol>
+<li>确定服务是要导出到远程后，创建Invoker，再把它传给RegistryProtocol的export方法（和导出到本地调用不一样的类）；</li>
+<li>在注册中心注册服务；</li>
+<li>向注册中心进行订阅 override 数据；</li>
+<li>创建并返回 DestroyableExporter。</li>
+</ol>
+<p>以上就是服务导出到远程的大致操作，源码较为复杂，暂不做分析，后面有时间再补上。。。（在导出到远程的这个过程，响应模式同步转为异步，底层传输默认使用 NettyTransporter，最终是创建 NettyServer）</p>
+<h4 id="3-1-3-服务注册："><a href="#3-1-3-服务注册：" class="headerlink" title="3.1.3 服务注册："></a>3.1.3 服务注册：</h4><p>因为服务注册本身内容也不少，所以单独拿出来再说下。一般Dubbo的注册中心都是采用Zookeeper，所以这里也将zk作为例子拿来讲。</p>
+<p>说道服务注册，就想到刚刚才提到的服务导出到远程，这个操作的起点就从服务导出到远程操作中RegistryProtocol的export方法开始，先看下它的源码吧（引自官网）：</p>
+<pre><code>public &lt;T&gt; Exporter&lt;T&gt; export(final Invoker&lt;T&gt; originInvoker) throws RpcException {
+
+    // ${导出服务}
+
+    // 省略其他代码
+
+    boolean register = registeredProviderUrl.getParameter(&quot;register&quot;, true);
+    if (register) {
+        // 注册服务
+        register(registryUrl, registeredProviderUrl);
+        ProviderConsumerRegTable.getProviderWrapper(originInvoker).setReg(true);
+    }
+
+    final URL overrideSubscribeUrl = getSubscribedOverrideUrl(registeredProviderUrl);
+    final OverrideListener overrideSubscribeListener = new OverrideListener(overrideSubscribeUrl, originInvoker);
+    overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener);
+    // 订阅 override 数据
+    registry.subscribe(overrideSubscribeUrl, overrideSubscribeListener);
+
+    // 省略部分代码
+}</code></pre><p>这段代码里做了两个重点操作，一个是注册，一个是订阅。</p>
+<ol>
+<li><p>先看下注册操作调的方法里干了啥：</p>
+<pre><code>public void register(URL registryUrl, URL registedProviderUrl) {
+    // 获取 Registry
+    Registry registry = registryFactory.getRegistry(registryUrl);
+    // 注册服务
+    registry.register(registedProviderUrl);
+}</code></pre><p> 获取Registry（其实就是new一个注册中心的实例），然后注册服务（就是将服务的配置数据写入到注册中心【这里指zk】某个路径的节点下）</p>
+</li>
+<li><p>再看下订阅 override 数据这个操作（官网上还没写，没办法，那我就完全根据自己的理解来了）。先看下这个方法subscribe()，是个模板方法，在调用时会进入到FailbackRegistry中，看下这个类的代码是怎么实现的：</p>
+<pre><code>public void subscribe(URL url, NotifyListener listener) {
+    super.subscribe(url, listener);
+    removeFailedSubscribed(url, listener);
+    try {
+        // Sending a subscription request to the server side
+        doSubscribe(url, listener);
+    } catch (Exception e) {
+        Throwable t = e;
+
+        List&lt;URL&gt; urls = getCacheUrls(url);
+        if (urls != null &amp;&amp; !urls.isEmpty()) {
+            notify(url, listener, urls);
+            logger.error(&quot;Failed to subscribe &quot; + url + &quot;, Using cached list: &quot; + urls + &quot; from cache file: &quot; + getUrl().getParameter(Constants.FILE_KEY, System.getProperty(&quot;user.home&quot;) + &quot;/dubbo-registry-&quot; + url.getHost() + &quot;.cache&quot;) + &quot;, cause: &quot; + t.getMessage(), t);
+        } else {
+            // If the startup detection is opened, the Exception is thrown directly.
+            boolean check = getUrl().getParameter(Constants.CHECK_KEY, true)
+                    &amp;&amp; url.getParameter(Constants.CHECK_KEY, true);
+            boolean skipFailback = t instanceof SkipFailbackWrapperException;
+            if (check || skipFailback) {
+                if (skipFailback) {
+                    t = t.getCause();
+                }
+                throw new IllegalStateException(&quot;Failed to subscribe &quot; + url + &quot;, cause: &quot; + t.getMessage(), t);
+            } else {
+                logger.error(&quot;Failed to subscribe &quot; + url + &quot;, waiting for retry, cause: &quot; + t.getMessage(), t);
+            }
+        }
+
+        // Record a failed registration request to a failed list, retry regularly
+        addFailedSubscribed(url, listener);
+    }
+}</code></pre><p> 这里大概做了如下操作：向服务器发送订阅请求-&gt;如果抛出异常则判断是否有缓存到URL（这里根据不同情况来抛异常）-&gt;把失败的订阅请求记录到失败列表，然后定时重试</p>
+</li>
+</ol>
+<p>整个导出过程大概就是这些了，分析得比较粗糙，后面加深理解了再来细化一下。</p>
+<h4 id="3-2-服务引入"><a href="#3-2-服务引入" class="headerlink" title="3.2 服务引入"></a>3.2 服务引入</h4><p>在 Dubbo 中，引用远程服务有两种方式：</p>
+<ol>
+<li>使用服务直连的方式引用服务(仅适合在调试或测试服务的场景下使用);</li>
+<li>基于注册中心进行引用。</li>
+</ol>
+<h4 id="3-2-1-服务引入原理"><a href="#3-2-1-服务引入原理" class="headerlink" title="3.2.1 服务引入原理"></a>3.2.1 服务引入原理</h4><p>Dubbo 服务引用的时机有两个，第一个是在 Spring 容器调用 ReferenceBean 的 afterPropertiesSet 方法时引用服务，第二个是在 ReferenceBean 对应的服务被注入到其他类中时引用。这两个引用服务的时机区别在于，第一个是饿汉式的，第二个是懒汉式的。默认情况下，Dubbo 使用懒汉式引用服务。如果需要使用饿汉式，可通过配置 <a href="dubbo:reference" target="_blank" rel="noopener">dubbo:reference</a> 的 init 属性开启。</p>
+<p>服务被注入到其他类中时，Spring 会第一时间调用 getObject 方法，并由该方法执行服务引用逻辑。然后先进行配置检查与收集工作。接着根据收集到的信息决定服务用的方式，有三种，第一种是引用本地 (JVM) 服务，第二是通过直连方式引用远程服务，第三是通过注册中心引用远程服务。</p>
+<p>不管是哪种引用方式，最后都会得到一个 Invoker 实例。如果有多个注册中心，多个服务提供者，这个时候会得到一组 Invoker 实例，此时需要通过集群管理类 Cluster 将多个 Invoker 合并成一个实例。合并后的 Invoker 实例已经具备调用本地或远程服务的能力了，但并不能将此实例暴露给用户使用，这会对用户业务代码造成侵入。此时框架还需要通过代理工厂类 (ProxyFactory) 为服务接口生成代理类，并让代理类去调用 Invoker 逻辑。避免了 Dubbo 框架代码对业务代码的侵入，同时也让框架更容易使用。</p>
+<h4 id="3-2-2-处理配置"><a href="#3-2-2-处理配置" class="headerlink" title="3.2.2 处理配置"></a>3.2.2 处理配置</h4><p>这一步骤大概是：</p>
+<ol>
+<li>检测ConsumerConfig实例是否存在，如果不存在就创建一个新的实例，然后通过系统变量或者dubbo.properties配置文件填充ConsumerConfig的字段；</li>
+<li>检测泛化配置，根据配置来设置interfaceClass的值，就是根据泛化配置来设置接口类啦；</li>
+<li>从系统属性或者配置文件里加载接口名对应的配置，解析得到的结果赋给用于点对点调用的url；</li>
+<li>检测核心配置类是否为空，若为空就尝试从其他的配置类里获取数据。然后手机各种配置，存到Map中；</li>
+<li>处理MethodConfig实例（包含了如：onreturn、onthrow、oninvoke等事件通知配置），然后解析服务消费者IP，调用createProxy创建代理对象。</li>
+</ol>
+<h4 id="3-2-3-引用服务"><a href="#3-2-3-引用服务" class="headerlink" title="3.2.3 引用服务"></a>3.2.3 引用服务</h4><p>在上处理配置中，最后一步调用createProxy其实并不仅仅是创建代理对象这么简单，其实它还调了其他方法创建并且合并Invoker实例。可以看下它的源码：</p>
+<pre><code>private T createProxy(Map&lt;String, String&gt; map) {
+    URL tmpUrl = new URL(&quot;temp&quot;, &quot;localhost&quot;, 0, map);
+    final boolean isJvmRefer;
+    if (isInjvm() == null) {
+        // url 配置被指定，则不做本地引用
+        if (url != null &amp;&amp; url.length() &gt; 0) {
+            isJvmRefer = false;
+        // 根据 url 的协议、scope 以及 injvm 等参数检测是否需要本地引用
+        // 比如如果用户显式配置了 scope=local，此时 isInjvmRefer 返回 true
+        } else if (InjvmProtocol.getInjvmProtocol().isInjvmRefer(tmpUrl)) {
+            isJvmRefer = true;
+        } else {
+            isJvmRefer = false;
+        }
+    } else {
+        // 获取 injvm 配置值
+        isJvmRefer = isInjvm().booleanValue();
+    }
+
+    // 本地引用
+    if (isJvmRefer) {
+        // 生成本地引用 URL，协议为 injvm
+        URL url = new URL(Constants.LOCAL_PROTOCOL, NetUtils.LOCALHOST, 0, interfaceClass.getName()).addParameters(map);
+        // 调用 refer 方法构建 InjvmInvoker 实例
+        invoker = refprotocol.refer(interfaceClass, url);
+
+    // 远程引用
+    } else {
+        // url 不为空，表明用户可能想进行点对点调用
+        if (url != null &amp;&amp; url.length() &gt; 0) {
+            // 当需要配置多个 url 时，可用分号进行分割，这里会进行切分
+            String[] us = Constants.SEMICOLON_SPLIT_PATTERN.split(url);
+            if (us != null &amp;&amp; us.length &gt; 0) {
+                for (String u : us) {
+                    URL url = URL.valueOf(u);
+                    if (url.getPath() == null || url.getPath().length() == 0) {
+                        // 设置接口全限定名为 url 路径
+                        url = url.setPath(interfaceName);
+                    }
+
+                    // 检测 url 协议是否为 registry，若是，表明用户想使用指定的注册中心
+                    if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
+                        // 将 map 转换为查询字符串，并作为 refer 参数的值添加到 url 中
+                        urls.add(url.addParameterAndEncoded(Constants.REFER_KEY, StringUtils.toQueryString(map)));
+                    } else {
+                        // 合并 url，移除服务提供者的一些配置（这些配置来源于用户配置的 url 属性），
+                        // 比如线程池相关配置。并保留服务提供者的部分配置，比如版本，group，时间戳等
+                        // 最后将合并后的配置设置为 url 查询字符串中。
+                        urls.add(ClusterUtils.mergeUrl(url, map));
+                    }
+                }
+            }
+        } else {
+            // 加载注册中心 url
+            List&lt;URL&gt; us = loadRegistries(false);
+            if (us != null &amp;&amp; !us.isEmpty()) {
+                for (URL u : us) {
+                    URL monitorUrl = loadMonitor(u);
+                    if (monitorUrl != null) {
+                        map.put(Constants.MONITOR_KEY, URL.encode(monitorUrl.toFullString()));
+                    }
+                    // 添加 refer 参数到 url 中，并将 url 添加到 urls 中
+                    urls.add(u.addParameterAndEncoded(Constants.REFER_KEY, StringUtils.toQueryString(map)));
+                }
+            }
+
+            // 未配置注册中心，抛出异常
+            if (urls.isEmpty()) {
+                throw new IllegalStateException(&quot;No such any registry to reference...&quot;);
+            }
+        }
+
+        // 单个注册中心或服务提供者(服务直连，下同)
+        if (urls.size() == 1) {
+            // 调用 RegistryProtocol 的 refer 构建 Invoker 实例
+            invoker = refprotocol.refer(interfaceClass, urls.get(0));
+
+        // 多个注册中心或多个服务提供者，或者两者混合
+        } else {
+            List&lt;Invoker&lt;?&gt;&gt; invokers = new ArrayList&lt;Invoker&lt;?&gt;&gt;();
+            URL registryURL = null;
+
+            // 获取所有的 Invoker
+            for (URL url : urls) {
+                // 通过 refprotocol 调用 refer 构建 Invoker，refprotocol 会在运行时
+                // 根据 url 协议头加载指定的 Protocol 实例，并调用实例的 refer 方法
+                invokers.add(refprotocol.refer(interfaceClass, url));
+                if (Constants.REGISTRY_PROTOCOL.equals(url.getProtocol())) {
+                    registryURL = url;
+                }
+            }
+            if (registryURL != null) {
+                // 如果注册中心链接不为空，则将使用 AvailableCluster
+                URL u = registryURL.addParameter(Constants.CLUSTER_KEY, AvailableCluster.NAME);
+                // 创建 StaticDirectory 实例，并由 Cluster 对多个 Invoker 进行合并
+                invoker = cluster.join(new StaticDirectory(u, invokers));
+            } else {
+                invoker = cluster.join(new StaticDirectory(invokers));
+            }
+        }
+    }
+
+    Boolean c = check;
+    if (c == null &amp;&amp; consumer != null) {
+        c = consumer.isCheck();
+    }
+    if (c == null) {
+        c = true;
+    }
+
+    // invoker 可用性检查
+    if (c &amp;&amp; !invoker.isAvailable()) {
+        throw new IllegalStateException(&quot;No provider available for the service...&quot;);
+    }
+
+    // 生成代理类
+    return (T) proxyFactory.getProxy(invoker);
+}</code></pre><p>这部分代码比较多，不过根据上面的注释整理下，大概也就做了这么几件事：</p>
+<ol>
+<li>检查是不是配置了本地调用，如果配了，那么就调InjvmProtocol 的refer方法生成Invoker（InjvmInvoker）实例；要是没配，就看下是要直连（直连就直接读取配置项）还是要通过注册中心（注册中性光就读取注册中心url，并把url存到urls里【这个是考虑多注册中心的情况】）；</li>
+<li>判断urls里的元素数量，为1就说明是单注册中心，直接通过Protocol自适应拓展类构建Invoker实例接口；若 urls 元素数量大于1，即存在多个注册中心或服务直连url，此时先根据url构建Invoker。然后再通过Cluster（集群）合并多个Invoker，最后调用ProxyFactory生成代理类。</li>
+</ol>
+<p>逻辑并不复杂，在上述的操作里，最核心的是创建Invoker和生成代理类。</p>
+<p><strong>1）创建Invoker</strong><br>Invoker是Dubbo的核心模型，代表一个可执行体。在服务提供方，Invoker用于调用服务提供类。在服务消费方，Invoker用于执行远程调用。Invoker是由Protocol实现类构建而来。Protocol实现类有很多，最常用的两个是RegistryProtocol和DubboProtocol。要分析源码的话，篇幅较长，这里暂不扩展。</p>
+<p><strong>2）创建代理</strong><br>在创建完Invoker之后就可以生成代理对象来做远程调用了。生成代理对象是通过ProxyFactory的实现类JavassistProxyFactory实现的getProxy方法来完成的，这里看下它的源码：</p>
+<pre><code>public &lt;T&gt; T getProxy(Invoker&lt;T&gt; invoker, Class&lt;?&gt;[] interfaces) {
+    // 生成 Proxy 子类（Proxy 是抽象类）。并调用 Proxy 子类的 newInstance 方法创建 Proxy 实例
+    return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
+}</code></pre><p>嗯，没得到想要的，再来关注下Proxy子类的getProxy方法吧：</p>
+<pre><code>public static Proxy getProxy(Class&lt;?&gt;... ics) {
+    // 调用重载方法
+    return getProxy(ClassHelper.getClassLoader(Proxy.class), ics);
+}
+
+public static Proxy getProxy(ClassLoader cl, Class&lt;?&gt;... ics) {
+    if (ics.length &gt; 65535)
+        throw new IllegalArgumentException(&quot;interface limit exceeded&quot;);
+
+    StringBuilder sb = new StringBuilder();
+    // 遍历接口列表
+    for (int i = 0; i &lt; ics.length; i++) {
+        String itf = ics[i].getName();
+        // 检测类型是否为接口
+        if (!ics[i].isInterface())
+            throw new RuntimeException(itf + &quot; is not a interface.&quot;);
+
+        Class&lt;?&gt; tmp = null;
+        try {
+            // 重新加载接口类
+            tmp = Class.forName(itf, false, cl);
+        } catch (ClassNotFoundException e) {
+        }
+
+        // 检测接口是否相同，这里 tmp 有可能为空
+        if (tmp != ics[i])
+            throw new IllegalArgumentException(ics[i] + &quot; is not visible from class loader&quot;);
+
+        // 拼接接口全限定名，分隔符为 ;
+        sb.append(itf).append(&apos;;&apos;);
+    }
+
+    // 使用拼接后的接口名作为 key
+    String key = sb.toString();
+
+    Map&lt;String, Object&gt; cache;
+    synchronized (ProxyCacheMap) {
+        cache = ProxyCacheMap.get(cl);
+        if (cache == null) {
+            cache = new HashMap&lt;String, Object&gt;();
+            ProxyCacheMap.put(cl, cache);
+        }
+    }
+
+    Proxy proxy = null;
+    synchronized (cache) {
+        do {
+            // 从缓存中获取 Reference&lt;Proxy&gt; 实例
+            Object value = cache.get(key);
+            if (value instanceof Reference&lt;?&gt;) {
+                proxy = (Proxy) ((Reference&lt;?&gt;) value).get();
+                if (proxy != null) {
+                    return proxy;
+                }
+            }
+
+            // 并发控制，保证只有一个线程可以进行后续操作
+            if (value == PendingGenerationMarker) {
+                try {
+                    // 其他线程在此处进行等待
+                    cache.wait();
+                } catch (InterruptedException e) {
+                }
+            } else {
+                // 放置标志位到缓存中，并跳出 while 循环进行后续操作
+                cache.put(key, PendingGenerationMarker);
+                break;
+            }
+        }
+        while (true);
+    }
+
+    long id = PROXY_CLASS_COUNTER.getAndIncrement();
+    String pkg = null;
+    ClassGenerator ccp = null, ccm = null;
+    try {
+        // 创建 ClassGenerator 对象
+        ccp = ClassGenerator.newInstance(cl);
+
+        Set&lt;String&gt; worked = new HashSet&lt;String&gt;();
+        List&lt;Method&gt; methods = new ArrayList&lt;Method&gt;();
+
+        for (int i = 0; i &lt; ics.length; i++) {
+            // 检测接口访问级别是否为 protected 或 privete
+            if (!Modifier.isPublic(ics[i].getModifiers())) {
+                // 获取接口包名
+                String npkg = ics[i].getPackage().getName();
+                if (pkg == null) {
+                    pkg = npkg;
+                } else {
+                    if (!pkg.equals(npkg))
+                        // 非 public 级别的接口必须在同一个包下，否者抛出异常
+                        throw new IllegalArgumentException(&quot;non-public interfaces from different packages&quot;);
+                }
+            }
+
+            // 添加接口到 ClassGenerator 中
+            ccp.addInterface(ics[i]);
+
+            // 遍历接口方法
+            for (Method method : ics[i].getMethods()) {
+                // 获取方法描述，可理解为方法签名
+                String desc = ReflectUtils.getDesc(method);
+                // 如果方法描述字符串已在 worked 中，则忽略。考虑这种情况，
+                // A 接口和 B 接口中包含一个完全相同的方法
+                if (worked.contains(desc))
+                    continue;
+                worked.add(desc);
+
+                int ix = methods.size();
+                // 获取方法返回值类型
+                Class&lt;?&gt; rt = method.getReturnType();
+                // 获取参数列表
+                Class&lt;?&gt;[] pts = method.getParameterTypes();
+
+                // 生成 Object[] args = new Object[1...N]
+                StringBuilder code = new StringBuilder(&quot;Object[] args = new Object[&quot;).append(pts.length).append(&quot;];&quot;);
+                for (int j = 0; j &lt; pts.length; j++)
+                    // 生成 args[1...N] = ($w)$1...N;
+                    code.append(&quot; args[&quot;).append(j).append(&quot;] = ($w)$&quot;).append(j + 1).append(&quot;;&quot;);
+                // 生成 InvokerHandler 接口的 invoker 方法调用语句，如下：
+                // Object ret = handler.invoke(this, methods[1...N], args);
+                code.append(&quot; Object ret = handler.invoke(this, methods[&quot; + ix + &quot;], args);&quot;);
+
+                // 返回值不为 void
+                if (!Void.TYPE.equals(rt))
+                    // 生成返回语句，形如 return (java.lang.String) ret;
+                    code.append(&quot; return &quot;).append(asArgument(rt, &quot;ret&quot;)).append(&quot;;&quot;);
+
+                methods.add(method);
+                // 添加方法名、访问控制符、参数列表、方法代码等信息到 ClassGenerator 中 
+                ccp.addMethod(method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
+            }
+        }
+
+        if (pkg == null)
+            pkg = PACKAGE_NAME;
+
+        // 构建接口代理类名称：pkg + &quot;.proxy&quot; + id，比如 org.apache.dubbo.proxy0
+        String pcn = pkg + &quot;.proxy&quot; + id;
+        ccp.setClassName(pcn);
+        ccp.addField(&quot;public static java.lang.reflect.Method[] methods;&quot;);
+        // 生成 private java.lang.reflect.InvocationHandler handler;
+        ccp.addField(&quot;private &quot; + InvocationHandler.class.getName() + &quot; handler;&quot;);
+
+        // 为接口代理类添加带有 InvocationHandler 参数的构造方法，比如：
+        // porxy0(java.lang.reflect.InvocationHandler arg0) {
+        //     handler=$1;
+        // }
+        ccp.addConstructor(Modifier.PUBLIC, new Class&lt;?&gt;[]{InvocationHandler.class}, new Class&lt;?&gt;[0], &quot;handler=$1;&quot;);
+        // 为接口代理类添加默认构造方法
+        ccp.addDefaultConstructor();
+
+        // 生成接口代理类
+        Class&lt;?&gt; clazz = ccp.toClass();
+        clazz.getField(&quot;methods&quot;).set(null, methods.toArray(new Method[0]));
+
+        // 构建 Proxy 子类名称，比如 Proxy1，Proxy2 等
+        String fcn = Proxy.class.getName() + id;
+        ccm = ClassGenerator.newInstance(cl);
+        ccm.setClassName(fcn);
+        ccm.addDefaultConstructor();
+        ccm.setSuperClass(Proxy.class);
+        // 为 Proxy 的抽象方法 newInstance 生成实现代码，形如：
+        // public Object newInstance(java.lang.reflect.InvocationHandler h) { 
+        //     return new org.apache.dubbo.proxy0($1);
+        // }
+        ccm.addMethod(&quot;public Object newInstance(&quot; + InvocationHandler.class.getName() + &quot; h){ return new &quot; + pcn + &quot;($1); }&quot;);
+        // 生成 Proxy 实现类
+        Class&lt;?&gt; pc = ccm.toClass();
+        // 通过反射创建 Proxy 实例
+        proxy = (Proxy) pc.newInstance();
+    } catch (RuntimeException e) {
+        throw e;
+    } catch (Exception e) {
+        throw new RuntimeException(e.getMessage(), e);
+    } finally {
+        if (ccp != null)
+            // 释放资源
+            ccp.release();
+        if (ccm != null)
+            ccm.release();
+        synchronized (cache) {
+            if (proxy == null)
+                cache.remove(key);
+            else
+                // 写缓存
+                cache.put(key, new WeakReference&lt;Proxy&gt;(proxy));
+            // 唤醒其他等待线程
+            cache.notifyAll();
+        }
+    }
+    return proxy;
+}</code></pre><p>又来这么一大串的。。。特别是这里面创建的两个类生成器对象ccp和ccm，很容易混啊。直接看官网的解释是说，ccp用于为服务接口生成代理类，比如我们有一个DemoService接口，这个接口代理类就是由ccp生成的。ccm则是用于为org.apache.dubbo.common.bytecode.Proxy抽象类生成子类，主要是实现Proxy类的抽象方法。</p>
+<p>大概看下这个过程：</p>
+<ol>
+<li>把传进来的接口遍历下，都检查一遍，看看是不是接口，然后重新加载，再看看名字有没重复，都OK就拼接接口的全限定名，然后把这个名称作为key；</li>
+<li>然后到缓存里取Reference<proxy>实例，然后看下并发控制那段代码——value==pendingGenerationMarker：说明JVM正在生成或者加载指定key值类字符串代表的Class对象，这时候不能重新生成代理类，需要等待。cache.wait(),等待当其他创建代理类线程将代理类创建好后，notify提醒并恢复线程。所以value!=pendingGenerationMarker时就把&lt;key,pendingGenerationMarker&gt;put进cache里，然后跳出本次循环做后续操作；</proxy></li>
+<li>然后就是创建ccp对象，然后遍历检测下接口（非public的接口是否都在同个包下，不在就抛异常了），检测没问题就把接口加到ccp里（addInterface）；</li>
+<li>接着去遍历检测下接口方法，没问题就把方法名、访问控制符、参数列表、方法代码这些信息加到ccp里（addMethod）；</li>
+<li>然后就去构建代理类了，先构建接口代理类名称（命名格式为：接口代理类名称：pkg + “.proxy” + id），再来生成私有的java.lang.reflect.InvocationHandler类的handler，再给接口代理类添加带有InvocationHandler参数的构造方法和默认构造方法，构造方法加完后就生成接口代理类；</li>
+<li>构建代理类子类，先构建代理类子类名称（如Proxy的子类就Proxy1，Proxy2），接着就创建ccm对象，把类名，默认构造方法，父类加到ccm里，再为Proxy的抽象方法newInstance生成实现代码，也加到ccm里，最后用ccm.toClass()来生成Proxy的实现类；</li>
+<li>有了代理的实现类之后，只要通过反射调newInstance方法来创建Proxy的实例就可以了。</li>
+</ol>
+<p>这部分比较复杂，至此，服务引入的全过程也大致分析完啦。后面有时间再来看下服务字典（Directory）、集群（Cluster）这些，至于服务路由和负载均衡，前面都有提到一些，时间够再来深入了解一波。</p>
+<p>参考内容来源：</p>
+<p><a href="http://dubbo.apache.org/zh-cn/docs/source_code_guide/export-service.html" target="_blank" rel="noopener">http://dubbo.apache.org/zh-cn/docs/source_code_guide/export-service.html</a></p>
+<p><a href="http://dubbo.apache.org/zh-cn/docs/source_code_guide/refer-service.html" target="_blank" rel="noopener">http://dubbo.apache.org/zh-cn/docs/source_code_guide/refer-service.html</a></p>
+<p><a href="https://www.cnblogs.com/juncaoit/p/7923185.html" target="_blank" rel="noopener">https://www.cnblogs.com/juncaoit/p/7923185.html</a></p>
+<p><a href="https://www.jianshu.com/p/02e80e770860" target="_blank" rel="noopener">https://www.jianshu.com/p/02e80e770860</a></p>
+<p><a href="https://www.jianshu.com/p/84ffb8d0a338" target="_blank" rel="noopener">https://www.jianshu.com/p/84ffb8d0a338</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/2019/08/24/Dubbo基础（一）/" rel="next" title="Dubbo基础（一）">
+                <i class="fa fa-chevron-left"></i> Dubbo基础（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+              <a href="/2019/10/16/Dubbo基础（三）/" rel="prev" title="Dubbo基础（三）">
+                Dubbo基础（三） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ironion</p>
+  <div class="site-description motion-element" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、服务提供者与服务消费者简介"><span class="nav-number">1.</span> <span class="nav-text">一、服务提供者与服务消费者简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-架构图浅析"><span class="nav-number">1.1.</span> <span class="nav-text">1.架构图浅析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-负载均衡配置"><span class="nav-number">1.2.</span> <span class="nav-text">2.负载均衡配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-服务导出和服务引入"><span class="nav-number">1.3.</span> <span class="nav-text">3.服务导出和服务引入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-服务导出"><span class="nav-number">1.4.</span> <span class="nav-text">3.1 服务导出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-1-前置工作"><span class="nav-number">1.5.</span> <span class="nav-text">3.1.1 前置工作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-2-导出服务"><span class="nav-number">1.6.</span> <span class="nav-text">3.1.2 导出服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-3-服务注册："><span class="nav-number">1.7.</span> <span class="nav-text">3.1.3 服务注册：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-服务引入"><span class="nav-number">1.8.</span> <span class="nav-text">3.2 服务引入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-服务引入原理"><span class="nav-number">1.9.</span> <span class="nav-text">3.2.1 服务引入原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-2-处理配置"><span class="nav-number">1.10.</span> <span class="nav-text">3.2.2 处理配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-3-引用服务"><span class="nav-number">1.11.</span> <span class="nav-text">3.2.3 引用服务</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ironion</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.3.0</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+  
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
+
+  
+
+  
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

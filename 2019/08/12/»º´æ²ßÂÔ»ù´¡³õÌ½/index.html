@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/',
+      path: ''
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
+
+  <meta name="description" content="一、引言由于我个人对于缓存这块内容基础极为薄弱，在不久前一次面试中被逮着问了，当时大脑空空如也，对于缓存只能蹦出几个零零散散的片段：ecache,redis，读取缓存数据代替内存来优化读写速度,Map存储。所以那次面试也毫无悬念的GG了。没办法，只能从头来学习下缓存这块内容。 二、缓存基础1、什么是缓存要想了解一个事物，就得从源头知道这东东是啥？为什么要有它？它存在的作用？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="缓存策略基础初探">
+<meta property="og:url" content="https://weihong363.github.io/2019/08/12/缓存策略基础初探/index.html">
+<meta property="og:site_name" content="光头王的Blog">
+<meta property="og:description" content="一、引言由于我个人对于缓存这块内容基础极为薄弱，在不久前一次面试中被逮着问了，当时大脑空空如也，对于缓存只能蹦出几个零零散散的片段：ecache,redis，读取缓存数据代替内存来优化读写速度,Map存储。所以那次面试也毫无悬念的GG了。没办法，只能从头来学习下缓存这块内容。 二、缓存基础1、什么是缓存要想了解一个事物，就得从源头知道这东东是啥？为什么要有它？它存在的作用？">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1425518851,605269695&fm=26&gp=0.jpg">
+<meta property="og:updated_time" content="2019-08-27T03:59:08.140Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="缓存策略基础初探">
+<meta name="twitter:description" content="一、引言由于我个人对于缓存这块内容基础极为薄弱，在不久前一次面试中被逮着问了，当时大脑空空如也，对于缓存只能蹦出几个零零散散的片段：ecache,redis，读取缓存数据代替内存来优化读写速度,Map存储。所以那次面试也毫无悬念的GG了。没办法，只能从头来学习下缓存这块内容。 二、缓存基础1、什么是缓存要想了解一个事物，就得从源头知道这东东是啥？为什么要有它？它存在的作用？">
+<meta name="twitter:image" content="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1425518851,605269695&fm=26&gp=0.jpg">
+  <link rel="canonical" href="https://weihong363.github.io/2019/08/12/缓存策略基础初探/">
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>缓存策略基础初探 | 光头王的Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">光头王的Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+    <ul id="menu" class="menu">
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+    </ul>
+    
+
+</nav>
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/08/12/缓存策略基础初探/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ironion">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="光头王的Blog">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">缓存策略基础初探
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-12 14:34:43" itemprop="dateCreated datePublished" datetime="2019-08-12T14:34:43+08:00">2019-08-12</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-08-27 11:59:08" itemprop="dateModified" datetime="2019-08-27T11:59:08+08:00">2019-08-27</time>
+              </span>
+            
+          
+
+          <br>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>由于我个人对于缓存这块内容基础极为薄弱，在不久前一次面试中被逮着问了，当时大脑空空如也，对于缓存只能蹦出几个零零散散的片段：ecache,redis，读取缓存数据代替内存来优化读写速度,Map存储。所以那次面试也毫无悬念的GG了。没办法，只能从头来学习下缓存这块内容。</p>
+<h3 id="二、缓存基础"><a href="#二、缓存基础" class="headerlink" title="二、缓存基础"></a>二、缓存基础</h3><h4 id="1、什么是缓存"><a href="#1、什么是缓存" class="headerlink" title="1、什么是缓存"></a>1、什么是缓存</h4><p>要想了解一个事物，就得从源头知道这东东是啥？为什么要有它？它存在的作用？</p>
+<a id="more"></a>
+
+<p>这些概念性的描述就借用现成的啦：</p>
+<ul>
+<li>缓存就是数据交换的缓冲区（称作：Cache），当某一硬件要读取数据时，会首先从缓存汇总查询数据，有则直接执行，不存在时从内存中获取。由于缓存的数据比内存快的多，所以缓存的作用就是帮助硬件更快的运行。</li>
+<li>缓存往往使用的是RAM（断电既掉的非永久存储），所以在用完后还是会把文件送到硬盘等存储器中永久存储。电脑中最大缓存就是内存条，硬盘上也有16M或者32M的缓存。</li>
+<li>高速缓存是用来协调CPU与主存之间存取速度的差异而设置的。一般CPU工作速度高，但内存的工作速度相对较低，为了解决这个问题，通常使用高速缓存，高速缓存的存取速度介于CPU与主存之间。系统将一些CPU在最近几个时间段经常访问的内容存在高速缓存，这样就在一定程度上缓解了由于主存速度低造成的CPU“停工待料”的情况。</li>
+<li>缓存就是把一些外存上的数据保存在内存上而已，为什么保存在内存上，我们运行的所有程序里面的变量都是存放在内存中的，所以如果想将值放入内存上，可以通过变量的方式存储。在JAVA中一些缓存一般都是通过Map集合来实现的。</li>
+</ul>
+<p>上述内容很好地回答了前面的问题。至于缓存的作用，被我引用的那篇文章也描述的很好，下面再次不要脸地抄一段：</p>
+<p>缓存在不同的场景下，作用是不一样的：</p>
+<ol>
+<li>操作系统磁盘缓存 ——&gt; 减少磁盘机械操作。</li>
+<li>数据库缓存——&gt;减少文件系统IO。</li>
+<li>应用程序缓存——&gt;减少对数据库的查询。</li>
+<li>Web服务器缓存——&gt;减少应用服务器请求。</li>
+<li>客户端浏览器缓存——&gt;减少对网站的访问。</li>
+</ol>
+<p>而我们平时做Java开发常接触到的应该就是2、3、4了吧，下面我就从这几个方面入手开始学习。</p>
+<h4 id="2、数据库缓存"><a href="#2、数据库缓存" class="headerlink" title="2、数据库缓存"></a>2、数据库缓存</h4><p>下面先拿最常用的mysql数据库来说吧。mysql数据库是通过QC（Query Cache）来实现数据库缓存的，当开启QC(默认是开启的，要关的话，把query_cache_size/type的值设成0，永久关闭就到mysql的配置文件里该)后，数据库会在执行select时，将其结果存储到QC，之后若再调用相同的SQL，就不会再去访问数据库表。直接从QC取值，这样一来是不是快了很多呢？</p>
+<p>不过，这样做会有个问题，如果在数据进行缓存之后，原来的数据库表数据发生了更改，那么从QC取出来的数据就是错误的了。因此QC有个对应的机制，如果数据库表发生更改，那么这个数据库表相关的所有缓存都会失效。</p>
+<p>根据QC的特点可知，要做mysql的查询缓存，该数据表的数据变动频率应该要比较小，否则碰到经常变动的表，缓存频繁失效，那开不开QC其实区别不大。</p>
+<p>顺便扩展下除了开查询缓存外mysql查询优化的几个长考虑到的点：</p>
+<ol>
+<li><p>加索引（这个是最常用的了）；</p>
+</li>
+<li><p>看慢查询日志，查看需要优化的SQL。加了索引开了QC之后还是觉得很慢，就需要查下慢查询日志了<br>，开启方法为：set global slow_query_log = 1;  1为开启  0为关闭，此外，再介绍几个相关的参数（slow_query_log_file 记录日志的文件名；log_queries_not_using_indexes 这个参数设置为ON，可以捕获到所有未使用索引的SQL语句；long_query_time 设置一个时间，超过该时间值的SQL会被记录下来）；</p>
+</li>
+<li><p>分库表。当数据量非常庞大几千万甚至上亿的时候，就需要分库表。先说分表，一般分表的方式有两种：水平分表和垂直分表。顾名思义，一个横着分一个竖着分。水平分表一般是数据量很大，数据表装不下时，要拆到多个表中，可以根据id，时间戳，或者其他的字段来拆这时候方法通常有以下三种：</p>
+<ol>
+<li>hash取模法。就是在分表前预估下这张表涉及到的数据量，假设有4000W，每张表可以容纳1000W，那我们可以大致拆成四张表，为了使数据能均匀地存到这四张表里，避免热点问题（对数据库的操作集中到一张表中，其他的表基本不被操作到，这样子压力就都集中到一张表上了）。所以我们对某个字段，比如说ID对4取模，这样子存进来的数据就均摊到四张表上，避免了热点问题，不过缺点就是较难再扩容，哪天需要再加个表，那取模怎么取？原来的那些ID怎么办？</li>
+<li>制定range范围。这个就很简单了，4000W数据嘛，那就ID是1~1000万的扔一张表里，后面几个表依次类推。那这种方法要扩容就很方便了，不过反过来看，在一个范围内的ID都集中在一张表上，那么在那个range范围内数据操作不就都集中在这张表上了，这个方案会有热点问题存在的缺陷；</li>
+<li>前两种方案各有长处，各有短处，那么，将他们结合起来不就完美了吗？所以group组的方案应运而生。假设目前计划拆4张表，每张表1000W，那么可以这样，把这些表归为2组，即两个group，第一个group放2张表，第二个group也是，然后在group之间使用hash取模法，即group1的ID为1-2000万，group的ID也为0-2000万，至于不同group取出的ID根据他们所处的group不同也就能唯一标识了。然后在group内根据range来分表。这种方法在一定程度上能结合前两种方法做优劣互补。</li>
+</ol>
+</li>
+</ol>
+<p>接下来说说垂直分表。垂直分表不想水平分表和表的总数据量有密切的关系。垂直分表更多的是基于业务对一个字段较多的大表，或者，某张表里有个或者有一些字段存储的信息量比较大，但是一般又查不到的进行拆分，拆成多个表，以优化查询速度。</p>
+<p>至于分库，我的理解就是根据数据库的数据量和业务场景，将各个数据表拆开放到位于不同服务器的数据库中，以缓解服务器压力，并优化数据库操作。这块内容接触较少，理解还比较浅，后续再继续学习。</p>
+<h4 id="3、应用程序缓存"><a href="#3、应用程序缓存" class="headerlink" title="3、应用程序缓存"></a>3、应用程序缓存</h4><p>主要分成对象缓存、插叙缓存和页面缓存。</p>
+<ol>
+<li>对象缓存：由ORM框架，像Hibernate和Mybatis都有提供，透明性访问，细粒度缓存数据库查询结果，无需用代码显式编程，在缓存策略中较为方便。适合OLTP（联机事务处理）应用；</li>
+<li>插叙缓存：缓存数据库查询结果，类似Mysql的QC，适用较为耗时且对时效性要求较低的场景，当记录发生修改后记得清除旧的缓存。与查询缓存适用场景不同，可以互补；</li>
+<li>页面缓存：作用是可以减轻数据库和应用服务器的压力，可以极大提高页面渲染速度，难点在于过期缓存的清理。分为以下几类：<ol>
+<li>动态页面静态化：利用模板技术来把动态页面生成静态的html，同时修改链接，使得之后的请求直接访问静态页面；无法做权限验证也无法显示个性化信息，不过可以通过AJAX来弥补动态页面静态化的一些缺点。多用于互联网CMS/新闻类的Web应用，以及部分的BBS；</li>
+<li>Servlet缓存：对请求返回的页面结果做缓存，适合粗粒度的页面缓存，如：新闻发布；相较于上一点，好处是可以做权限检查，在OScache中有提供简单的Servlet缓存，只需在web.xml中做好相应配置即可。也可以自己写代码实现：可以参考：<a href="https://www.cnblogs.com/henuyuxiang/p/7486120.html" title="https://www.cnblogs.com/henuyuxiang/p/7486120.html" target="_blank" rel="noopener">https://www.cnblogs.com/henuyuxiang/p/7486120.html</a>里面简单地实现了一个自定义的缓存类。</li>
+<li>页面内部缓存：可以针对动态页面的局部片段进行缓存，适用于不常更新的个性化页面：如博客。同上，OScache也提供了简单的页面内部缓存，可以拓展JSP Tag来实现页面局部缓存。</li>
+</ol>
+</li>
+</ol>
+<p>下面补充下常用的ORM框架怎么实现对象缓存。</p>
+<p>Mybatis。Mybatis提供了一级缓存和二级缓存，如下图：</p>
+<p><img src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1425518851,605269695&fm=26&gp=0.jpg" alt></p>
+<p>根据图示可以看出，一级缓存是基于SqlSession级别的缓存。因此要做缓存时需要构造一个SqlSession对象，存储的数据结构为HashMap。而二级缓存是基于Mapper的，由多个一级缓存共同作用，可以看出二级缓存是跨多个SqlSession的。</p>
+<p>至于使用的话，一级缓存是默认开启的，二级缓存则需要手动开启，需要再mybatis的配置文件中加入</p>
+<pre><code>&lt;!--开启二级缓存  --&gt;
+&lt;settings&gt;
+    &lt;setting name=&quot;cacheEnabled&quot; value=&quot;true&quot;/&gt;
+&lt;/settings&gt;</code></pre><p>然后在需要缓存的Mapper文件里加</p>
+<pre><code>&lt;cache&gt;&lt;/cache&gt;
+
+不过故事到这里还没完，上述的二级缓存是Mybatis自带的，只能用于单体应用，碰到分布式服务就GG了。为了实现分布式应用的二级缓存，需要去整合分布式缓存框架，如：Ehcache（其他的框架又碰到再说，Ehcache支持多缓存管理器实例，以及一个实例多个缓存区域，此外，默认提供Hibernate的缓存实现）。
+至于操作嘛，大概分为以下几步：
+    1. 导入mybatis-ehcache整合包（就是相关的一些jar包啦）；
+    2. 配置Mybatis配置文件开启二级缓存；
+    3. 在需要开缓存的Mapper文件中整合ehcache缓存：
+    &lt;!-- 开启本mapper的namespace下的二级缓存
+        type:指定cache接口的实现类的类型，不写type属性，mybatis默认使用PerpetualCache
+        要和ehcache整合，需要配置type为ehcache实现cache接口的类型
+    --&gt;
+    &lt;cache type=&quot;org.mybatis.caches.ehcache.EhcacheCache&quot;&gt;&lt;/cache&gt;
+    4. 配置缓存参数，在classpath下新建ehcache.xml文件。配置如下：
+    &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;ehcache xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+    xsi:noNamespaceSchemaLocation=&quot;../config/ehcache.xsd&quot;&gt;
+    &lt;diskStore path=&quot;【数据在磁盘中的存储位置】&quot;/&gt;
+    &lt;defaultCache
+        maxElementsInMemory=&quot;10000&quot;【内存中缓存element的最大数目】
+        eternal=&quot;false&quot;【设置true则缓存的element永不过期，若为false，则还需结合timeToLiveSeconds来判断】
+        maxElementsOnDisk=&quot;10000000&quot;【磁盘中缓存element的最大数目，0为无穷大】
+        overflowToDisk=&quot;true&quot;【缓存溢出时是否将过期的element缓存到磁盘上】 
+        【下列为可选属性】
+        timeToIdleSeconds=&quot;120&quot;【数据闲置时间，即缓存数据前后两次访问的间隔时间超过此数值时，数据会被删掉，默认为0，即无穷大】
+        timeToLiveSeconds=&quot;120&quot;【缓存的element的有效时间，默认为0】
+        diskSpoolBufferSizeMB=&quot;30&quot;【设置磁盘缓存的缓冲区大小，默认30M】 
+        diskPersistent=&quot;false&quot;【VM重启时是否启用磁盘保存ehcache中的数据，默认为false】 
+        diskExpiryThreadIntervalSeconds=&quot;120&quot;【磁盘缓存清理线程执行间隔时间，默认120s】
+        memoryStoreEvictionPolicy=&quot;LRU&quot;【缓存满时，加入新element的处理策略，默认LRU（近期最少使用），此外还有LFU（最不常使用）和FIFO（先进先出）】&gt;
+    &lt;persistence strategy=&quot;localTempSwap&quot;/&gt;
+    &lt;/defaultCache&gt;
+     &lt;/ehcache&gt;</code></pre><p>二级缓存的使用场景：适用于查询请求较多，粒度较粗，且对查询结果返回的实时性要求不高的情况，可以使用Mybatis自带的二级缓存来缓解数据库压力，提升性能。实际的业务场景一些查询数据较多，较为耗时的统计分析sql、账单查询的sql等。这些数据查询比较频繁，且通常发生变化的概率比较低，所以就先设置好mybatis的缓存清空时间，然后再根据具体的业务场景隔一段时间去刷新缓存。</p>
+<h4 id="4、Web服务器缓存"><a href="#4、Web服务器缓存" class="headerlink" title="4、Web服务器缓存"></a>4、Web服务器缓存</h4><p>web服务器缓存的一般分为三类：浏览器缓存（客户端的缓存，前面提到的页面缓存是服务端缓存、个人感觉springmvc配置静态资源的缓存也是页面缓存的一种实现）、代理服务器缓存和网关缓存（也就是CDN或者叫反向代理缓存）。</p>
+<p>先讨论代理服务器缓存。一般常用的代理服务器有两种：正向代理apache和反向代理nginx，下面逐一介绍它们的缓存策略配置：</p>
+<ol>
+<li><p>apache服务器的缓存策略配置。apache要配置缓存策略要用到配置文件里的两个模块，mod_expires和mod_headers。</p>
+<ol>
+<li><p>mod_expires，主要是用来自动生成报文头的Expires标签和Cache-Control标签，要配置它很简单，要配置的指令就3个：</p>
+<ul>
+<li>ExpiresActive：打开或关闭产生的Expires标签和Cache-Control标签，值为On或者Off，如：ExpiresActive On</li>
+<li>ExpiresByType：制定MIME类型文档（比如说：text/html）的过期时间，如：ExpiresByType image【文档类型，也可以是text、application或者其他】/* “access plus 10 years”</li>
+<li>ExpiresDefault：所有文档的默认过期时间，如：ExpiresDefault “access plus 6 months”</li>
+<li>PS：过期时间的写法：<ul>
+<li>“access plus 1 month”</li>
+<li>“access plus 4 weeks”</li>
+<li>“now plus 30 days”</li>
+<li>“modification plus 5 hours 3 minutes”</li>
+<li>A2592000 【A加时间，A同acces或now，过期时间从访问时开始计算】</li>
+<li>M604800 【M加时间，M同modification，过期时间从最近的修改时间开始计算，所以它只对静态文件起作用，不对动态文件起作用】</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>mod_headers。这个顾名思义，就是设置header的模块。示例如下：</p>
+<pre><code># YEAR
+Header set Cache-Control “max-age=2592000″     
+# WEEK
+Header set Cache-Control “max-age=604800″  
+# NEVER CACHE
+Header set Expires “Thu, 01 Dec 2003 16:00:00 GMT”
+Header set Cache-Control “no-store, no-cache, must-revalidate”
+Header set Pragma “no-cache”            </code></pre><p>可以看出，这个模块设置的内容其实和mod_expires差不多的，所以这两个模块设置其中一个就够了。</p>
+</li>
+</ol>
+</li>
+<li><p>nginx要配置的相关模块就一个HTTP Headers，可以在这个模块里设置任意的HTTP报文头，模块下有两个指令：add_header和expires。</p>
+<ol>
+<li><p>add_header，语法为：add_header 【name】 【value】。默认值为none。在http、server和location三处均可配置。示例如下：</p>
+<pre><code>location /foo1 {
+     add_header foo1 1;
+     rewrite / /foo2;
+}</code></pre><p>不过要注意的是，它的处理阶段比location处理晚，虽然可以写在location中，但如果rewrite别的location，那么上一个location中尚未处理的add_header就会丢失。像示例里最终的header就没有foo1。</p>
+</li>
+<li><p>expires,语法为：expires [time|epoch|max|off]，默认值为：expires off。在http、server和location三处均可配置。示例如下：</p>
+<pre><code>location /foo1 {
+     expires 1h；
+}</code></pre></li>
+</ol>
+</li>
+</ol>
+<p>关于缓存的基础先简单理解到这里，后面有学习到新的再更。。。</p>
+<p>参考内容来源：</p>
+<p><a href="https://blog.csdn.net/zhengzhaoyang122/article/details/82184029" target="_blank" rel="noopener">https://blog.csdn.net/zhengzhaoyang122/article/details/82184029</a></p>
+<p><a href="https://blog.csdn.net/Srodong/article/details/88390671" title="https://blog.csdn.net/Srodong/article/details/88390671" target="_blank" rel="noopener">https://blog.csdn.net/Srodong/article/details/88390671</a></p>
+<p><a href="https://mp.weixin.qq.com/s/I57Y5btF-FcL6pGnUU7LHw" title="https://mp.weixin.qq.com/s/I57Y5btF-FcL6pGnUU7LHw" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/I57Y5btF-FcL6pGnUU7LHw</a></p>
+<p><a href="https://www.cnblogs.com/shuzhongruyu/p/8485607.html" title="https://www.cnblogs.com/shuzhongruyu/p/8485607.html" target="_blank" rel="noopener">https://www.cnblogs.com/shuzhongruyu/p/8485607.html</a></p>
+<p><a href="https://www.cnblogs.com/ysocean/p/7342498.html" title="https://www.cnblogs.com/ysocean/p/7342498.html" target="_blank" rel="noopener">https://www.cnblogs.com/ysocean/p/7342498.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/2019/08/09/ThreadPoolExcutor源码个人浅析（二）/" rel="next" title="ThreadPoolExcutor源码个人浅析（二）">
+                <i class="fa fa-chevron-left"></i> ThreadPoolExcutor源码个人浅析（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+              <a href="/2019/08/24/Dubbo基础（一）/" rel="prev" title="Dubbo基础（一）">
+                Dubbo基础（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ironion</p>
+  <div class="site-description motion-element" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、引言"><span class="nav-number">1.</span> <span class="nav-text">一、引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、缓存基础"><span class="nav-number">2.</span> <span class="nav-text">二、缓存基础</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、什么是缓存"><span class="nav-number">2.1.</span> <span class="nav-text">1、什么是缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、数据库缓存"><span class="nav-number">2.2.</span> <span class="nav-text">2、数据库缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、应用程序缓存"><span class="nav-number">2.3.</span> <span class="nav-text">3、应用程序缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、Web服务器缓存"><span class="nav-number">2.4.</span> <span class="nav-text">4、Web服务器缓存</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ironion</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.3.0</div>
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+      </div>
+
+    
+
+  </div>
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+  
+  <script src="/js/schemes/muse.js?v=7.3.0"></script>
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
+
+  
+
+  
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

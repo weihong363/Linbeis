@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="alternate" href="/atom.xml" title="光头王的Blog" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="一、引言在目前分布式领域，Dubbo算是比较常用的框架了，一般都是用Dubbo+ZK组合搭建一个分布式应用的。虽然个人使用上更偏向于Spring Cloud些，毕竟自带全家桶，整合各种组件都很方便。不过Dubbo既然作为国内多数公司在使用的分布式框架，也自然有他的可取之处。（注：本篇的内容都是根据Dubbo官网介绍的版本，即dubbo-2.6.4来学习的） 二、架构### 上图是取自Dubbo官网">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dubbo基础（一）">
+<meta property="og:url" content="https:&#x2F;&#x2F;weihong363.github.io&#x2F;2019&#x2F;10&#x2F;18&#x2F;Dubbo%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89&#x2F;index.html">
+<meta property="og:site_name" content="光头王的Blog">
+<meta property="og:description" content="一、引言在目前分布式领域，Dubbo算是比较常用的框架了，一般都是用Dubbo+ZK组合搭建一个分布式应用的。虽然个人使用上更偏向于Spring Cloud些，毕竟自带全家桶，整合各种组件都很方便。不过Dubbo既然作为国内多数公司在使用的分布式框架，也自然有他的可取之处。（注：本篇的内容都是根据Dubbo官网介绍的版本，即dubbo-2.6.4来学习的） 二、架构### 上图是取自Dubbo官网">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http:&#x2F;&#x2F;dubbo.apache.org&#x2F;docs&#x2F;zh-cn&#x2F;user&#x2F;sources&#x2F;images&#x2F;dubbo-architecture.jpg">
+<meta property="og:updated_time" content="2019-10-18T05:50:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http:&#x2F;&#x2F;dubbo.apache.org&#x2F;docs&#x2F;zh-cn&#x2F;user&#x2F;sources&#x2F;images&#x2F;dubbo-architecture.jpg">
+
+<link rel="canonical" href="https://weihong363.github.io/2019/10/18/Dubbo%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Dubbo基础（一） | 光头王的Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">光头王的Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/10/18/Dubbo%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ironion">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="光头王的Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Dubbo基础（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-10-18 13:50:38" itemprop="dateCreated datePublished" datetime="2019-10-18T13:50:38+08:00">2019-10-18</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>在目前分布式领域，Dubbo算是比较常用的框架了，一般都是用Dubbo+ZK组合搭建一个分布式应用的。虽然个人使用上更偏向于Spring Cloud些，毕竟自带全家桶，整合各种组件都很方便。不过Dubbo既然作为国内多数公司在使用的分布式框架，也自然有他的可取之处。（注：本篇的内容都是根据Dubbo官网介绍的版本，即dubbo-2.6.4来学习的）</p>
+<h3 id="二、架构"><a href="#二、架构" class="headerlink" title="二、架构###"></a>二、架构###</h3><p><img src="http://dubbo.apache.org/docs/zh-cn/user/sources/images/dubbo-architecture.jpg" alt></p>
+<p>上图是取自Dubbo官网的架构图。可以看到，Dubbo框架主要由四个节点组成：</p>
+<ol>
+<li>注册中心 Registry</li>
+<li>服务提供者 Provider（启动需要基于容器Container来启动）</li>
+<li>服务消费者 Consummer</li>
+<li>监控中心 Monitor</li>
+</ol>
+<p>下面将分别介绍上述的几个节点：</p>
+<a id="more"></a>
+
+<h4 id="1、注册中心（Registry）"><a href="#1、注册中心（Registry）" class="headerlink" title="1、注册中心（Registry）"></a>1、注册中心（Registry）</h4><p>注册中心，顾名思义，就是用来管理注册信息的中心机构。从Dubbo的架构图可看出，首先是提供者向注册中心注册提供者的信息，然后是接受消费者的订阅请求，最后把含有提供者信息的列表发通知给消费者，后续就不参与提供者与消费之间的交互了，即不转发请求，只负责服务的发现与注册，给消费者提供一个提供者的目录。</p>
+<p>所以可以知道注册中心的主要功能就两个：服务发现、服务注册。</p>
+<p>先说服务发现，服务发现是基于SPI（Service Provider Interface）机制。这个机制其实就是把接口的实现类（全限定名）配置在文件里，在服务加载器读取配置文件时，这个实现类就会被加载到。这样一来，就可以动态地给接口替换实现类，只要服务一注册，新的实现类就会加载进来。</p>
+<p>不过Dubbo的SPI机制与JAVA的SPI机制（JAVA的SPI机制应用很广，想常见的JDBC、JDNI就是类SPI设计的）不同，Dubbo是重新实现了一套功能更强的SPI机制（JAVA的是全限定名列表，要获取只能通过遍历把所有的实现类都加在一遍，这点比较不好，Dubbo则改成用K,V形式的列表，要获取时就不用去遍历加载其他类了），下面将根据Dubbo官网的文档来理解下Dubbo SPI。</p>
+<p>关于Dubbo SPI的使用，我们直接拿官网的例子来讲。</p>
+<ol>
+<li><p>定义要扩展的接口，并在上面加上@SPI注解</p>
+<pre><code>@SPI(&quot;Robot&quot;)
+public interface Robot { 
+    void sayHello();
+}</code></pre></li>
+<li><p>在META-INF/dubbo路径下加配置文件，配置的内容如下（里面写的两个类为接口类的实现类，配置形式key=value【全限定名】）：</p>
+<pre><code>optimusPrime = org.apache.spi.OptimusPrime
+bumblebee = org.apache.spi.Bumblebee</code></pre></li>
+<li><p>下方代码为测试示例：</p>
+<pre><code>public class DubboSPITest {
+
+@Test
+public void sayHello() throws Exception {
+    //获取一个Robot类的ExtensionLoader实例
+    ExtensionLoader&lt;Robot&gt; extensionLoader = 
+        ExtensionLoader.getExtensionLoader(Robot.class);
+    //得到扩展类的对象
+    Robot optimusPrime = extensionLoader.getExtension(&quot;optimusPrime&quot;);
+    //调用扩展类的方法
+    optimusPrime.sayHello();
+    Robot bumblebee = extensionLoader.getExtension(&quot;bumblebee&quot;);
+    bumblebee.sayHello();
+    }
+}</code></pre></li>
+</ol>
+<p>根据官网描述，Dubbo SPI把相关的逻辑封装在了ExtensionLoader类中，我们要加载实现类时就要用到这个东东，它是扩展点的载入器，用来载入Dubbo一些可配置的组件，比如说负载均衡策略、协议、集群、动态代理方式、拦截器、注册中心类型之类的。ExtensionLoader类使用的大概流程就是：</p>
+<ol>
+<li>用ExtensionLoader类getExtensionLoader方法获取一个ExtensionLoader的实例。值得注意的是，getExtensionLoader方法是从缓存中取得扩展类对应的ExtensionLoader对象。若是缓存没有命中，就新建一个ExtensionLoader实例；</li>
+<li>再通过getExtension得到扩展类的对象；</li>
+</ol>
+<h4 id="1-1获取所有的扩展类"><a href="#1-1获取所有的扩展类" class="headerlink" title="1.1获取所有的扩展类"></a>1.1获取所有的扩展类</h4><p>大概了解了ExtensionLoader的工作过程，下面看下源码，来理解下它的工作原理。先从getExtensionLoader方法入手：</p>
+<pre><code>public T getExtension(String name) {
+    if (name == null || name.length() == 0)
+        throw new IllegalArgumentException(&quot;Extension name == null&quot;);
+    if (&quot;true&quot;.equals(name)) {
+        // 获取默认的拓展实现类
+        return getDefaultExtension();
+    }
+    // Holder，顾名思义，用于持有目标对象
+    Holder&lt;Object&gt; holder = cachedInstances.get(name);
+    if (holder == null) {
+        cachedInstances.putIfAbsent(name, new Holder&lt;Object&gt;());
+        holder = cachedInstances.get(name);
+    }
+    Object instance = holder.get，可以防止();
+    // 双重检查
+    if (instance == null) {
+        synchronized (holder) {
+            instance = holder.get();
+            if (instance == null) {
+                // 创建拓展实例
+                instance = createExtension(name);
+                // 设置实例到 holder 中
+                holder.set(instance);
+            }
+        }
+    }
+    return (T) instance;
+}</code></pre><p>这个方法的操作简而言之就是，看下我们要获取的这个name能不能命中缓存，能从缓存里取东西直接返回，不行的话就通过createExtension这个方法来创建一个我们需要名称为name的扩展对象。值得一体的是，这块的操作使用了双检锁（双重检查锁，简称双检锁，可以防止在多线程下，instance被实例化多次，并被不同对象持有的情况）</p>
+<p>接下来看下用来创建拓展对象的createExtension方法：</p>
+<pre><code>private T createExtension(String name) {
+    // 从配置文件中加载所有的拓展类，可得到“配置项名称”到“配置类”的映射关系表
+    Class&lt;?&gt; clazz = getExtensionClasses().get(name);
+    if (clazz == null) {
+        throw findException(name);
+    }
+    try {
+        T instance = (T) EXTENSION_INSTANCES.get(clazz);
+        if (instance == null) {
+            // 通过反射创建实例
+            EXTENSION_INSTANCES.putIfAbsent(clazz, clazz.newInstance());
+            instance = (T) EXTENSION_INSTANCES.get(clazz);
+        }
+        // 向实例中注入依赖
+        injectExtension(instance);
+        Set&lt;Class&lt;?&gt;&gt; wrapperClasses = cachedWrapperClasses;
+        if (wrapperClasses != null &amp;&amp; !wrapperClasses.isEmpty()) {
+            // 循环创建 Wrapper 实例
+            for (Class&lt;?&gt; wrapperClass : wrapperClasses) {
+                // 将当前 instance 作为参数传给 Wrapper 的构造方法，并通过反射创建 Wrapper 实例。
+                // 然后向 Wrapper 实例中注入依赖，最后将 Wrapper 实例再次赋值给 instance 变量
+                instance = injectExtension(
+                    (T) wrapperClass.getConstructor(type).newInstance(instance));
+            }
+        }
+        return instance;
+    } catch (Throwable t) {
+        throw new IllegalStateException(&quot;...&quot;);
+    }
+}</code></pre><p>可以看出这个方法大概做了如下操作：</p>
+<ol>
+<li>调getExtensionClasses方法获取所有的拓展类，然后再get(name)获取对应的拓展类；</li>
+<li>接下来通过反射来创建对应的实例；</li>
+<li>通过injectExtension方法向实例注入依赖；</li>
+<li>官网的说法是将实例包裹在相应的Wrapper对象中（其实就是源码里的：循环、创建Wrapper实例、向Wrapper实例注入依赖），最后，再把Wrapper实例赋值给instance变量。</li>
+</ol>
+<p>接着再来看下createExtension方法里用的getExtensionClasses方法是做了啥操作来获取所有拓展类的吧：</p>
+<pre><code>private Map&lt;String, Class&lt;?&gt;&gt; getExtensionClasses() {
+    // 从缓存中获取已加载的拓展类
+    Map&lt;String, Class&lt;?&gt;&gt; classes = cachedClasses.get();
+    // 双重检查
+    if (classes == null) {
+        synchronized (cachedClasses) {
+            classes = cachedClasses.get();
+            if (classes == null) {
+                // 加载拓展类
+                classes = loadExtensionClasses();
+                cachedClasses.set(classes);
+            }
+        }
+    }
+    return classes;
+}</code></pre><p>这个操作似曾相识啊，还是那个查缓存，还是那个双检锁，不过这次的操作没有传name参数了，直接查全部的。不过有小小的不同，若缓存没有命中，则加锁，然后再去看下能不能命中缓存。还不行，就调loadExtensionClasses方法来加载拓展类了。</p>
+<p>接下来再看看loadExtensionClasses方法的源码吧：</p>
+<pre><code>private Map&lt;String, Class&lt;?&gt;&gt; loadExtensionClasses() {
+    // 获取 SPI 注解，这里的 type 变量是在调用 getExtensionLoader 方法时传入的
+    final SPI defaultAnnotation = type.getAnnotation(SPI.class);
+    if (defaultAnnotation != null) {
+        String value = defaultAnnotation.value();
+        if ((value = value.trim()).length() &gt; 0) {
+            // 对 SPI 注解内容进行切分
+            String[] names = NAME_SEPARATOR.split(value);
+            // 检测 SPI 注解内容是否合法，不合法则抛出异常
+            if (names.length &gt; 1) {
+                throw new IllegalStateException(&quot;more than 1 default extension name on extension...&quot;);
+            }
+
+            // 设置默认名称，参考 getDefaultExtension 方法
+            if (names.length == 1) {
+                cachedDefaultName = names[0];
+            }
+        }
+    }
+
+    Map&lt;String, Class&lt;?&gt;&gt; extensionClasses = new HashMap&lt;String, Class&lt;?&gt;&gt;();
+    // 加载指定文件夹下的配置文件
+    loadDirectory(extensionClasses, DUBBO_INTERNAL_DIRECTORY);
+    loadDirectory(extensionClasses, DUBBO_DIRECTORY);
+    loadDirectory(extensionClasses, SERVICES_DIRECTORY);
+    return extensionClasses;
+}</code></pre><p>源码的注释已经写得很详细了，总的来说就两步操作：1、获取SPI注解并作解析；2、通过loadDirectory方法来加载指定文件夹下的配置文件（这就是为啥配置文件要扔META-INF/dubbo下，因为方法里把路径都给指定死了）。解析SPI的过程没啥好说的，来看下loadDirectory方法做了啥吧：</p>
+<pre><code>private void loadDirectory(Map&lt;String, Class&lt;?&gt;&gt; extensionClasses, String dir) {
+    // fileName = 文件夹路径 + type 全限定名 
+    String fileName = dir + type.getName();
+    try {
+        Enumeration&lt;java.net.URL&gt; urls;
+        ClassLoader classLoader = findClassLoader();
+        // 根据文件名加载所有的同名文件
+        if (classLoader != null) {
+            urls = classLoader.getResources(fileName);
+        } else {
+            urls = ClassLoader.getSystemResources(fileName);
+        }
+        if (urls != null) {
+            while (urls.hasMoreElements()) {
+                java.net.URL resourceURL = urls.nextElement();
+                // 加载资源
+                loadResource(extensionClasses, classLoader, resourceURL);
+            }
+        }
+    } catch (Throwable t) {
+        logger.error(&quot;...&quot;);
+    }
+}</code></pre><p>整个过程没啥好说的，就是拿全限定名和目录拼个路径，然后去加载这个资源文件。不过这里面的loadResource方法还需要再看下，毕竟这样看也看不出它咋加载的资源文件，所以，再往下深入，看下loadResource方法的源码：</p>
+<pre><code>private void loadResource(Map&lt;String, Class&lt;?&gt;&gt; extensionClasses, 
+ClassLoader classLoader, java.net.URL resourceURL) {
+    try {
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(resourceURL.openStream(), &quot;utf-8&quot;));
+        try {
+            String line;
+            // 按行读取配置内容
+            while ((line = reader.readLine()) != null) {
+                // 定位 # 字符
+                final int ci = line.indexOf(&apos;#&apos;);
+                if (ci &gt;= 0) {
+                    // 截取 # 之前的字符串，# 之后的内容为注释，需要忽略
+                    line = line.substring(0, ci);
+                }
+                line = line.trim();
+                if (line.length() &gt; 0) {
+                    try {
+                        String name = null;
+                        int i = line.indexOf(&apos;=&apos;);
+                        if (i &gt; 0) {
+                            // 以等于号 = 为界，截取键与值
+                            name = line.substring(0, i).trim();
+                            line = line.substring(i + 1).trim();
+                        }
+                        if (line.length() &gt; 0) {
+                            // 加载类，并通过 loadClass 方法对类进行缓存
+                            loadClass(extensionClasses, resourceURL, 
+                                      Class.forName(line, true, classLoader), name);
+                        }
+                    } catch (Throwable t) {
+                        IllegalStateException e = new IllegalStateException(&quot;Failed to load extension class...&quot;);
+                    }
+                }
+            }
+        } finally {
+            reader.close();
+        }
+    } catch (Throwable t) {
+        logger.error(&quot;Exception when load extension class...&quot;);
+    }
+}</code></pre><p>这个方法前面的部分平平无奇，就是解析配置文件的一些常规操作，通过BufferedReader按行读取，然后注释那些该跳过的跳过，该解析的解析。往下继续看，当解析到需要加载的类的信息时，调了loadClass这个方法来加载类，并对类进行缓存。。。。。。这兜兜转转有点多啊，只能再看下loadClass的源码了：</p>
+<pre><code>private void loadClass(Map&lt;String, Class&lt;?&gt;&gt; extensionClasses, java.net.URL resourceURL, 
+Class&lt;?&gt; clazz, String name) throws NoSuchMethodException {
+
+    if (!type.isAssignableFrom(clazz)) {
+        throw new IllegalStateException(&quot;...&quot;);
+    }
+
+    // 检测目标类上是否有 Adaptive 注解
+    if (clazz.isAnnotationPresent(Adaptive.class)) {
+        if (cachedAdaptiveClass == null) {
+            // 设置 cachedAdaptiveClass缓存
+            cachedAdaptiveClass = clazz;
+        } else if (!cachedAdaptiveClass.equals(clazz)) {
+            throw new IllegalStateException(&quot;...&quot;);
+        }
+
+    // 检测 clazz 是否是 Wrapper 类型
+    } else if (isWrapperClass(clazz)) {
+        Set&lt;Class&lt;?&gt;&gt; wrappers = cachedWrapperClasses;
+        if (wrappers == null) {
+            cachedWrapperClasses = new ConcurrentHashSet&lt;Class&lt;?&gt;&gt;();
+            wrappers = cachedWrapperClasses;
+        }
+        // 存储 clazz 到 cachedWrapperClasses 缓存中
+        wrappers.add(clazz);
+
+    // 程序进入此分支，表明 clazz 是一个普通的拓展类
+    } else {
+        // 检测 clazz 是否有默认的构造方法，如果没有，则抛出异常
+        clazz.getConstructor();
+        if (name == null || name.length() == 0) {
+            // 如果 name 为空，则尝试从 Extension 注解中获取 name，或使用小写的类名作为 name
+            name = findAnnotationName(clazz);
+            if (name.length() == 0) {
+                throw new IllegalStateException(&quot;...&quot;);
+            }
+        }
+        // 切分 name
+        String[] names = NAME_SEPARATOR.split(name);
+        if (names != null &amp;&amp; names.length &gt; 0) {
+            Activate activate = clazz.getAnnotation(Activate.class);
+            if (activate != null) {
+                // 如果类上有 Activate 注解，则使用 names 数组的第一个元素作为键，
+                // 存储 name 到 Activate 注解对象的映射关系
+                cachedActivates.put(names[0], activate);
+            }
+            for (String n : names) {
+                if (!cachedNames.containsKey(clazz)) {
+                    // 存储 Class 到名称的映射关系
+                    cachedNames.put(clazz, n);
+                }
+                Class&lt;?&gt; c = extensionClasses.get(n);
+                if (c == null) {
+                    // 存储名称到 Class 的映射关系
+                    extensionClasses.put(n, clazz);
+                } else if (c != clazz) {
+                    throw new IllegalStateException(&quot;...&quot;);
+                }
+            }
+        }
+    }
+}</code></pre><p>来康康这个类下的几个分支：1、首先，检测目标类上是否有Adaptive注解（这注解是啥。。。先跳过，后面再来看下）；2、若果没有那个注解，就检测clazz是不是Wrapper类型（这clazz是啥。。。看下上一级的是怎么传的——Class.forName(line, true, classLoader)，这东东其实就是返回一个Class对象的），是的话就存储 clazz 到 cachedWrapperClasses 缓存中；3、最后呢，检测 clazz 是否有默认的构造方法，如果没有，则抛出异常。总之，上面的这些操作其实就是缓存、缓存、缓存。这样子后面去操作就能命中缓存啦。</p>
+<h4 id="1-2Adaptive注解"><a href="#1-2Adaptive注解" class="headerlink" title="1.2Adaptive注解"></a>1.2Adaptive注解</h4><p>接下来再来看下Adaptive注解吧，看源码里就是一堆注释，大概翻译下吧，大意是说：</p>
+<blockquote>
+<p>决定注入哪个目标扩展。目标扩展名由URL中传递的参数决定，参数名由此方法给出。</p>
+<p>如果在url中找不到指定的参数，则默认扩展名将用于依赖注入（在其接口的spi中指定）。</p>
+<p>例如，给定一个字符串数组{“key1”，”key2”}，根据这个数组依次在url中查找参数key1，key2。假设key1找不到或者值为空，就尝试用key2作为拓展名称，如果key2也没有，就使用默认扩展名，否则就抛出illegalstateexception异常。</p>
+<p>要是spi上又凑巧没给出默认扩展名（也就是@SPI的值没给出），那么将使用以下规则根据接口的类名生成一个名称：将类名从大写字符分为多个部分，并用*点“.”，例如：对于com.alibaba.dubbo.xxx.yyyinvokerwrapper，其默认名称为字符串数组：{“yyy.invoker.wrapper”}。此名称将用于从URL搜索参数。</p>
+</blockquote>
+<p>上面就是我基于源码注释的大致理解，就是说这个东东主要是为了识别扩展类的，用注释里的原话说就是为extensionloader注入依赖项扩展实例提供有用信息。</p>
+<p>感觉概念说了一堆，但还不是很清晰。看下它要怎么使用吧。引用某博主的一句话：@Adaptive可以用在类、接口和方法上。<br>@Adaptive代表dubbo的SPI的动态适应能力，如果@Adaptive注解在扩展点实现类上那个该扩展点就是一个包装真实扩展点实例的装饰类；如果注解在方法上那么扩展点的实例就是一个动态代理类，例如Protocol$Adaptive对象。感觉一下子清楚了好多。这个注解还有很多内容，暂时不再做扩展了，后面应该会再提到，这个涉及到Dubbo的自适应扩展机制。</p>
+<h4 id="1-3Dubbo-IOC"><a href="#1-3Dubbo-IOC" class="headerlink" title="1.3Dubbo IOC"></a>1.3Dubbo IOC</h4><p>接下来说下Dubbo SPI的一来注入方式，Dubbo IOC。Dubbo IOC是通过setter方法来注入以来的。大致的流程如下：</p>
+<ol>
+<li><p>Dubbo通过反射取到实例所有方法；</p>
+</li>
+<li><p>遍历这个实例的方法列表，检测遍历到的方法是否具有setter方法特征（就是判断遍历到的是不是setter方法啦）；</p>
+</li>
+<li><p>如果有，就通过ObjectFactory获取依赖对象，然后通过反射调这个setter方法把历来设置到目标对象里。这个官网上也给出了例子，如下：</p>
+<pre><code>private T injectExtension(T instance) {
+    try {
+        if (objectFactory != null) {
+            // 遍历目标类的所有方法
+            for (Method method : instance.getClass().getMethods()) {
+                // 检测方法是否以 set 开头，且方法仅有一个参数，且方法访问级别为 public
+                if (method.getName().startsWith(&quot;set&quot;)
+                    &amp;&amp; method.getParameterTypes().length == 1
+                    &amp;&amp; Modifier.isPublic(method.getModifiers())) {
+                    // 获取 setter 方法参数类型
+                    Class&lt;?&gt; pt = method.getParameterTypes()[0];
+                    try {
+                        // 获取属性名，比如 setName 方法对应属性名 name
+                        String property = method.getName().length() &gt; 3 ? 
+                            method.getName().substring(3, 4).toLowerCase() + 
+                                method.getName().substring(4) : &quot;&quot;;
+                        // 从 ObjectFactory 中获取依赖对象
+                        Object object = objectFactory.getExtension(pt, property);
+                        if (object != null) {
+                            // 通过反射调用 setter 方法设置依赖
+                            method.invoke(instance, object);
+                        }
+                    } catch (Exception e) {
+                        logger.error(&quot;fail to inject via method...&quot;);
+                    }
+                }
+            }
+        }
+    } catch (Exception e) {
+        logger.error(e.getMessage(), e);
+    }
+    return instance;
+}</code></pre><p>上面的代码中objectFactory是一个AdaptiveExtensionFactory类型的变量，AdaptiveExtensionFactory 内部维护了一个 ExtensionFactory 列表，用于存储其他类型的 ExtensionFactory。<br>分别是 SpiExtensionFactory 和 SpringExtensionFactory。前者用于创建自适应的拓展，后者是用于从 Spring 的 IOC 容器中获取所需的拓展。（这段直接抄官网的）</p>
+</li>
+</ol>
+<p>总的来说呢，Dubbo虽然没有Spring Cloud那么多组件，但是因为有Dubbo SPI的存在，所以自己去实现一个也是可以的。关于Dubbo的基础这篇先了解到注册中心这里，后面继续研究其他部分。</p>
+<p>参考内容来源：</p>
+<p><a href="http://dubbo.apache.org/zh-cn/docs/source_code_guide/dubbo-spi.html" target="_blank" rel="noopener">https://http://dubbo.apache.org/zh-cn/docs/source_code_guide/dubbo-spi.html</a></p>
+<p><a href="http://dubbo.apache.org/zh-cn/docs/user/preface/architecture.html" target="_blank" rel="noopener">http://dubbo.apache.org/zh-cn/docs/user/preface/architecture.html</a></p>
+<p><a href="https://www.jianshu.com/p/0905fc2511c2" target="_blank" rel="noopener">https://www.jianshu.com/p/0905fc2511c2</a></p>
+<p><a href="https://www.cnblogs.com/shuzhongruyu/p/8485607.html" target="_blank" rel="noopener" title="https://www.cnblogs.com/shuzhongruyu/p/8485607.html">https://www.cnblogs.com/shuzhongruyu/p/8485607.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/10/17/Dubbo%E5%9F%BA%E7%A1%80%EF%BC%88%E4%B8%89%EF%BC%89/" rel="next" title="Dubbo基础（三）">
+                  <i class="fa fa-chevron-left"></i> Dubbo基础（三）
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+                <a href="/2019/10/18/Dubbo%E5%9F%BA%E7%A1%80%EF%BC%88%E4%BA%8C%EF%BC%89/" rel="prev" title="Dubbo基础（二）">
+                  Dubbo基础（二） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、引言"><span class="nav-number">1.</span> <span class="nav-text">一、引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、架构"><span class="nav-number">2.</span> <span class="nav-text">二、架构###</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、注册中心（Registry）"><span class="nav-number">2.1.</span> <span class="nav-text">1、注册中心（Registry）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1获取所有的扩展类"><span class="nav-number">2.2.</span> <span class="nav-text">1.1获取所有的扩展类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2Adaptive注解"><span class="nav-number">2.3.</span> <span class="nav-text">1.2Adaptive注解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3Dubbo-IOC"><span class="nav-number">2.4.</span> <span class="nav-text">1.3Dubbo IOC</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ironion</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ironion</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.5.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
