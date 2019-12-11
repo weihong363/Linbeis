@@ -171,6 +171,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/12/11/%E6%B3%A8%E9%87%8A%E7%B1%BB%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ironion">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="光头王的Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/12/11/%E6%B3%A8%E9%87%8A%E7%B1%BB%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">注释类浅析</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2019-12-11 18:24:19 / Modified: 18:24:22" itemprop="dateCreated datePublished" datetime="2019-12-11T18:24:19+08:00">2019-12-11</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>最近碰到不少自定义的注释类，所以心血来潮想要来深入了解下注释类。关于注解，算是比较熟悉的了，平时写代码都离不开注解，然而对注解内部的定义还知之甚少，在这里来了解下。</p>
+<h3 id="二、Annotation"><a href="#二、Annotation" class="headerlink" title="二、Annotation"></a>二、Annotation</h3><h4 id="1、元注解"><a href="#1、元注解" class="headerlink" title="1、元注解"></a>1、元注解</h4><p>所谓元注解，赛我看来，就是在定义注解是用到的注解。。。有点绕。元注解包括以下几个：</p>
+<ol>
+<li><p>@Retention：标识这个注解怎么保存，是只在代码中，还是编入class文件中，或者是在运行时可以通过反射访问；</p>
+</li>
+<li><p>@Documented：标记这些注解是否包含在用户文档中；</p>
+</li>
+<li><p>@Target：标记这个注解应该是哪种 Java 成员；</p>
+</li>
+<li><p>@Inherited：标记这个注解是继承于哪个注解类(默认 注解并没有继承于任何子类)，阐述了某个被标注的类型是被继承的。如果一个使用了@Inherited修饰的annotation类型被用于一个class，则这个annotation将被用于该class的子类，就是说这个注解是可继承的；</p>
+<p> 注意：@Inherited annotation类型是被标注过的class的子类所继承。类并不从它所实现的接口继承annotation，方法并不从它所重载的方法继承annotation。</p>
+</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/12/11/%E6%B3%A8%E9%87%8A%E7%B1%BB%E6%B5%85%E6%9E%90/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/11/19/k8s%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -782,7 +860,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
