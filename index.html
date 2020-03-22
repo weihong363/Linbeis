@@ -171,6 +171,93 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2020/03/22/%E6%97%A5%E5%B8%B8%E4%B8%AD%E7%A2%B0%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ironion">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="光头王的Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/22/%E6%97%A5%E5%B8%B8%E4%B8%AD%E7%A2%B0%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">日常中碰到的设计模式——模板模式</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-22 17:31:02 / Modified: 17:33:07" itemprop="dateCreated datePublished" datetime="2020-03-22T17:31:02+08:00">2020-03-22</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>设计模式，对于我们平时写代码而言，似乎离得很近（比如Spring里用到的工厂模式、单例模式这些），但需要自己去写的设计模式又几乎没有，毕竟框架里轮子都造好了。而我平时用到的也仅有策略模式，就是整个枚举，然后根据传进来的参数不同，看看在switch下匹配到哪个，然后去执行相应的方法，算是比较简单且常用的设计模式了。</p>
+<h3 id="二、模板模式简介"><a href="#二、模板模式简介" class="headerlink" title="二、模板模式简介"></a>二、模板模式简介</h3><p>所谓的模板模式，也就是写一个抽象父类，这个父类公开定义了执行它的方法的方式/模板。然后它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。</p>
+<p>说白了就是，需要某些类需要执行相似的操作，这时候可以整个抽象类作为它们的父类，然后在不同的业务场景下去调子类从父类中重写的方法就可以了。这么讲似乎还是有点绕，下面举个例子吧：</p>
+<pre><code>假设有抽象父类A作为模板
+public abstract class A {
+    public abstract String aa();
+}
+
+子类AImpl集成了这个模板，并重写了它的方法
+public class AImpl extends A {
+    @Override
+    public String aa() {
+        return &quot;AImpl&quot;;
+    }
+}
+
+那么现在来调用下
+public static void main(String[] args) {
+    A a = new AImpl();
+    String aa = a.aa();
+    System.out.println(aa);
+}</code></pre><p>这个输出应该毫无悬念，是：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/22/%E6%97%A5%E5%B8%B8%E4%B8%AD%E7%A2%B0%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/12/11/%E6%B3%A8%E9%87%8A%E7%B1%BB%E6%B5%85%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -860,7 +947,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -891,7 +978,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="alternate" href="/atom.xml" title="光头王的Blog" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="一、引言设计模式，对于我们平时写代码而言，似乎离得很近（比如Spring里用到的工厂模式、单例模式这些），但需要自己去写的设计模式又几乎没有，毕竟框架里轮子都造好了。而我平时用到的也仅有策略模式，就是整个枚举，然后根据传进来的参数不同，看看在switch下匹配到哪个，然后去执行相应的方法，算是比较简单且常用的设计模式了。 二、模板模式简介所谓的模板模式，也就是写一个抽象父类，这个父类公开定义了执行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="日常中碰到的设计模式——模板模式">
+<meta property="og:url" content="https:&#x2F;&#x2F;weihong363.github.io&#x2F;2020&#x2F;03&#x2F;22&#x2F;%E6%97%A5%E5%B8%B8%E4%B8%AD%E7%A2%B0%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F&#x2F;index.html">
+<meta property="og:site_name" content="光头王的Blog">
+<meta property="og:description" content="一、引言设计模式，对于我们平时写代码而言，似乎离得很近（比如Spring里用到的工厂模式、单例模式这些），但需要自己去写的设计模式又几乎没有，毕竟框架里轮子都造好了。而我平时用到的也仅有策略模式，就是整个枚举，然后根据传进来的参数不同，看看在switch下匹配到哪个，然后去执行相应的方法，算是比较简单且常用的设计模式了。 二、模板模式简介所谓的模板模式，也就是写一个抽象父类，这个父类公开定义了执行">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-03-22T09:33:07.567Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://weihong363.github.io/2020/03/22/%E6%97%A5%E5%B8%B8%E4%B8%AD%E7%A2%B0%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>日常中碰到的设计模式——模板模式 | 光头王的Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">光头王的Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2020/03/22/%E6%97%A5%E5%B8%B8%E4%B8%AD%E7%A2%B0%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ironion">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="光头王的Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          日常中碰到的设计模式——模板模式
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-22 17:31:02 / Modified: 17:33:07" itemprop="dateCreated datePublished" datetime="2020-03-22T17:31:02+08:00">2020-03-22</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>设计模式，对于我们平时写代码而言，似乎离得很近（比如Spring里用到的工厂模式、单例模式这些），但需要自己去写的设计模式又几乎没有，毕竟框架里轮子都造好了。而我平时用到的也仅有策略模式，就是整个枚举，然后根据传进来的参数不同，看看在switch下匹配到哪个，然后去执行相应的方法，算是比较简单且常用的设计模式了。</p>
+<h3 id="二、模板模式简介"><a href="#二、模板模式简介" class="headerlink" title="二、模板模式简介"></a>二、模板模式简介</h3><p>所谓的模板模式，也就是写一个抽象父类，这个父类公开定义了执行它的方法的方式/模板。然后它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。</p>
+<p>说白了就是，需要某些类需要执行相似的操作，这时候可以整个抽象类作为它们的父类，然后在不同的业务场景下去调子类从父类中重写的方法就可以了。这么讲似乎还是有点绕，下面举个例子吧：</p>
+<pre><code>假设有抽象父类A作为模板
+public abstract class A {
+    public abstract String aa();
+}
+
+子类AImpl集成了这个模板，并重写了它的方法
+public class AImpl extends A {
+    @Override
+    public String aa() {
+        return &quot;AImpl&quot;;
+    }
+}
+
+那么现在来调用下
+public static void main(String[] args) {
+    A a = new AImpl();
+    String aa = a.aa();
+    System.out.println(aa);
+}</code></pre><p>这个输出应该毫无悬念，是：</p>
+<a id="more"></a>
+
+<pre><code>AImpl</code></pre><h3 id="三、实际应用"><a href="#三、实际应用" class="headerlink" title="三、实际应用"></a>三、实际应用</h3><p>以上是个简单的模板模式的应用，看起来毫无技术含量，似乎平时也用不上的样子。下面将举个我最近实际中遇到的场景：</p>
+<h4 id="1、业务场景"><a href="#1、业务场景" class="headerlink" title="1、业务场景"></a>1、业务场景</h4><p>因为项目需要对客户的一些数据做同步，比如：用户信息，项目信息，楼栋信息之类的。通过HTTP接口接受客户传来的JSON数据,然后传进数据库里。数据类似这样：</p>
+<pre><code>{
+     &quot;name&quot;:&quot;user&quot;,
+     &quot;value&quot;:&quot;\&quot;LoginName\&quot;:\&quot;aaa\&quot;,\&quot;Password\&quot;:\&quot;66f0429cac5a857beb41f8f091ac4c2e\&quot;&quot;
+}</code></pre><p>name的值是需要同步到的表名，value的值则是需要同步的内容。看到这里大概思路应该都有了，先做个枚举，然后用策略模式，根据传来的不同的表名去做判断。然后，根据不同的策略去执行相应的操作。但是，这里发现了一个问题——无论是什么表，我们要对它做的操作都是：</p>
+<pre><code>1. 查，查看这个数据在表中存不存在；
+2. 增，数据不存在就去新增；
+3. 改，数据存在就去修改。</code></pre><p>这些操作都是一样的，代码要是这么反反复复的写，要是这个要同步的表有很多，那不是要写吐了吗？</p>
+<p>作为一个脱离了低级趣味的程序员，对于代码基本的审美还是要有的。对于这些反反复复，长得又差不多的操作，我们必须把他抽象出来，这时候，就需要模板模式登场了。。。</p>
+<h4 id="2、建立模板"><a href="#2、建立模板" class="headerlink" title="2、建立模板"></a>2、建立模板</h4><p>首先，我们得先明确下，有哪些类需要去整个模板出来？这个其实看下增查改这几个步骤涉及了哪些类就知道了：</p>
+<pre><code>1. 实体类。JSON数据传进来后，对应于各个表的不同字段，就需要去建对应的实体，在数据库的增查改操作中也涉及到这些实体类，所以这里需要去做个实体类的模板；
+2. dao接口。毕竟是要去操作数据库的，少了dao可不行，而且，对应于不同的表，也有不同的dao，所以这里需要做一个dao接口的模板。</code></pre><p>接下来看下具体的操作（因为涉及项目的信息，所以这里实体类我把它简化了）：</p>
+<pre><code>这里实体类举User作为例子，其他几个类似，就不写了： 
+public class User{
+
+    //用户ID
+    private String userId;
+    //用户登陆名
+    private String loginname;
+    //用户登陆密码
+    private String password;
+
+    public String getUserId() {
+        return userid;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getLoginname() {
+        return loginname;
+    }
+
+    public void setLoginname(String loginname) {
+        this.loginname = loginname;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String setPassword(String password) {
+        this.password = password;
+    }
+}</code></pre><p>现在来写模板类，因为在查的时候需要实体类某个关键字作为筛选条件来查（譬如说ID），所以这里模板类先给定一个方法用来获取筛选条件的关键字（若有其他需要，再添加方法），如下:</p>
+<pre><code>public abstract class TemplateClass {
+    public abstract String getClassKey();
+}   </code></pre><p>这样，一个实体类模板就完成了，下面来继承它：</p>
+<pre><code>public class User extends TemplateClass{
+    //用户ID
+    private String userId;
+    //用户登陆名
+    private String loginname;
+    //用户登陆密码
+    private String password;
+
+    public String getUserId() {
+        return userid;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getLoginname() {
+        return loginname;
+    }
+
+    public void setLoginname(String loginname) {
+        this.loginname = loginname;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String getClassKey() {
+        return userid;
+    }
+}</code></pre><p>那么要获取这个查询条件，通过去调用这个getClassKey方法就可以了，接下来看下增和改，对于实体类模板这儿，应该不需要再添加额外的方法了，相对于需要传查询条件的查方法而言，这两个操作其实都是传实体类进去，然后去执行相应的sql，不需要去获取实体类的其他信息了。</p>
+<p>那么下面就需要来编写dao的模板了，我们先看下User的dao接口：</p>
+<pre><code>public interface UserDao{
+    /**
+     * 通过ID查询单条数据
+     */
+    User query(String userId);
+
+    /**
+     * 新增数据
+     */
+    int insert(User user);
+
+    /**
+     * 修改数据
+     */
+    int update(User User);
+}</code></pre><p>因为模板的dao接口需要UserDao去重写到它所有的方法，所以它可以这么写：</p>
+<pre><code>public interface TemplateDao{
+    /**
+     * 通过ID查询单条数据
+     */
+    TemplateClass query(String id);
+
+    /**
+     * 新增数据
+     */
+    int insert(TemplateClass templateClass);
+
+    /**
+     * 修改数据
+     */
+    int update(TemplateClass templateClass);
+}</code></pre><p>既然是模板dao，那么它里面涉及到的实体类也必须是模板实体类才行，接下来让UserDao去继承模板dao：</p>
+<pre><code>public interface UserDao extends TemplateDao{
+    /**
+     * 通过ID查询单条数据
+     */
+    @Override
+    User query(String userid);
+
+    /**
+     * 新增数据
+     */
+    @Override 
+    int insert(TemplateClass user);
+
+    /**
+     * 修改数据
+     */
+    @Override 
+    int update(TemplateClass User);
+}</code></pre><p>这里要注意，这几个重写的方法入参类型必须与父类一致才行，返回的类型可以是父类里定义的返回类型的子类（这个一般IDE里也会提示的）。</p>
+<h4 id="3、模板方法"><a href="#3、模板方法" class="headerlink" title="3、模板方法"></a>3、模板方法</h4><p>好了模板定义好了，可以开始整去调用这些模板的方法了，方法如下：</p>
+<pre><code>//这里入参得是模板类，那么调用模板方法时，根据不同的场景，传相应的继承模板类的实体类进来就可以了,如果这里User类的作为入参，templateClass相当于user,templateDao相当于userDao
+public void templateMethod(RecieveRequestParam recieveRequestParam,TemplateClass templateClass, TemplateDao templateDao){
+        //解析JSON成相应的实体，如果这里User类的作为入参，则会去解析成User类实例
+        templateClass = JSONObject.parseObject(recieveRequestParam.getValue(), templateClass.getClass());
+        //获取关键字用于查询，如果这里User类的作为入参，会去获取userId来查
+        String key = templateClass.getClassKey();
+        //这里其实相当于user = userDao.query(userId);
+        TemplateClass template = templateDao.query(key);
+        if(null == template) {
+            //这里相当于userDao.insert(user);
+            templateDao.insert(templateClass);
+        }else {
+            //这里相当于userDao.udpate(user);
+            templateDao.update(templateClass);
+        }
+}</code></pre><p>然后去调用它：</p>
+<pre><code>switch (enum){
+            case USER:
+                templateMethod(recieveRequestParam,resultValue,new User(),userDao);
+                break;
+            case PROJECT:
+                templateMethod(recieveRequestParam,resultValue,new Position(),positionDao);
+                break;
+            case BUILDING:
+                templateMethod(recieveRequestParam,resultValue,new Building(),buildingDao);
+                break;
+            default:
+                break;
+        }</code></pre><p>看到这里，想必模板模式如何使用已经很清晰了。后续有碰到其他设计模式的使用场景，再来记录一波。</p>
+<p>参考内容来源：</p>
+<p><a href="https://www.runoob.com/design-pattern/template-pattern.html" target="_blank" rel="noopener">https://www.runoob.com/design-pattern/template-pattern.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2019/12/11/%E6%B3%A8%E9%87%8A%E7%B1%BB%E6%B5%85%E6%9E%90/" rel="next" title="注释类浅析">
+                  <i class="fa fa-chevron-left"></i> 注释类浅析
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、引言"><span class="nav-number">1.</span> <span class="nav-text">一、引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、模板模式简介"><span class="nav-number">2.</span> <span class="nav-text">二、模板模式简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、实际应用"><span class="nav-number">3.</span> <span class="nav-text">三、实际应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、业务场景"><span class="nav-number">3.1.</span> <span class="nav-text">1、业务场景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、建立模板"><span class="nav-number">3.2.</span> <span class="nav-text">2、建立模板</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、模板方法"><span class="nav-number">3.3.</span> <span class="nav-text">3、模板方法</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ironion</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ironion</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.5.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
