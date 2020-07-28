@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="alternate" href="/atom.xml" title="光头王的Blog" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.5.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="ps:本文内容整理自《设计模式之禅》，非个人原创，仅供学习使用，侵删。 六大设计原则单一职责原则 定义：应该有且只有一个原因引起类的变更 SRP（Single Responsibility Principle）。此原则在项目中难以实现，毕竟项目中技术人员的话语权都比较低，最终都得做出妥协（引自《设计模式之禅》作者原话大意） 最佳实践：接口一定要做到单一职责，类的设计尽量做到只有一个原因引起变化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《设计模式之禅》学习后的整理归纳">
+<meta property="og:url" content="https:&#x2F;&#x2F;weihong363.github.io&#x2F;2020&#x2F;07&#x2F;27&#x2F;%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F&#x2F;index.html">
+<meta property="og:site_name" content="光头王的Blog">
+<meta property="og:description" content="ps:本文内容整理自《设计模式之禅》，非个人原创，仅供学习使用，侵删。 六大设计原则单一职责原则 定义：应该有且只有一个原因引起类的变更 SRP（Single Responsibility Principle）。此原则在项目中难以实现，毕竟项目中技术人员的话语权都比较低，最终都得做出妥协（引自《设计模式之禅》作者原话大意） 最佳实践：接口一定要做到单一职责，类的设计尽量做到只有一个原因引起变化">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-07-28T08:31:25.147Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://weihong363.github.io/2020/07/27/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>《设计模式之禅》学习后的整理归纳 | 光头王的Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">光头王的Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2020/07/27/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ironion">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="光头王的Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《设计模式之禅》学习后的整理归纳
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-07-27 11:09:31" itemprop="dateCreated datePublished" datetime="2020-07-27T11:09:31+08:00">2020-07-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-28 16:31:25" itemprop="dateModified" datetime="2020-07-28T16:31:25+08:00">2020-07-28</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><em>ps:本文内容整理自《设计模式之禅》，非个人原创，仅供学习使用，侵删。</em></p>
+<h2 id="六大设计原则"><a href="#六大设计原则" class="headerlink" title="六大设计原则"></a>六大设计原则</h2><h3 id="单一职责原则"><a href="#单一职责原则" class="headerlink" title="单一职责原则"></a>单一职责原则</h3><ul>
+<li>定义：应该有且只有一个原因引起类的变更</li>
+<li>SRP（Single Responsibility Principle）。此原则在项目中难以实现，毕竟项目中技术人员的话语权都比较低，最终都得做出妥协（引自《设计模式之禅》作者原话大意）</li>
+<li>最佳实践：接口一定要做到单一职责，类的设计尽量做到只有一个原因引起变化</li>
+</ul>
+<a id="more"></a>
+
+<h3 id="里氏替换原则"><a href="#里氏替换原则" class="headerlink" title="里氏替换原则"></a>里氏替换原则</h3><ul>
+<li><p>定义1：If for each object o1 of type S there is an object o2 of type T such that for all programs P defined in terms of T,the behavior of P is unchanged when o1 is substituted for o2 then S is a subtype of T.（大意就是程序中的子类换成父类，程序的行为不会发生什么变化）</p>
+</li>
+<li><p>定义2：Function that use pointers or references to base classes must be able to use objects of derived classes without knowing it.（大意就是，基类的指针或者引用的函数可以在对子类一无所知的情况下使用子类的对象）</p>
+</li>
+<li><p>LSP（Liskov Substitution Principe）。它为良好的继承定义了规范</p>
+<ul>
+<li>1.子类必须完全实现父类的方法</li>
+<li>2.子类可以有自己的“个性”（有自己的方法和属性）</li>
+<li>3.覆盖和实现父类的方法时，输入的参数可以放大。（即子类覆盖父类的方法时，可以做重载，参数类型可以放大成父类方法参数的父类型）也就是说，子类方法前置条件必须与超类中被覆写的方法的前置条件相同或更宽松</li>
+<li>4.覆写或实现父类方法时，输出结果可以被缩小（也就是子类覆写或实现父类的方法，返回值可以是父类方法返回值的子类）</li>
+</ul>
+</li>
+<li><p>最佳实践：项目中采用里氏替换原则时，要尽量避免子类的“个性”。若是把子类当父类用，那些“个性“派不上用场；若是子类作为一个单独的业务来用，代码间的耦合关系会变得扑朔迷离——缺乏类替换的标准。</p>
+</li>
+</ul>
+<h3 id="依赖倒置原则"><a href="#依赖倒置原则" class="headerlink" title="依赖倒置原则"></a>依赖倒置原则</h3><ul>
+<li><p>定义：High level modules should not depend upon low level modules.Both should depend upon abstractions.Abstractions should not depend upon details.Details should depend upon abstractions.</p>
+<ul>
+<li>高层模块不应依赖于低层模块，两者都该依赖其抽象</li>
+<li>抽象不应该依赖于细节</li>
+<li>细节应该依赖于抽象</li>
+</ul>
+</li>
+<li><p>DIP（Dependence Inversion Principle）。</p>
+<ul>
+<li><p>在java中的表现即是OOD（Object-Oriented Design）”面向接口编程“</p>
+<ul>
+<li>模块间的依赖通过抽象发生，实现类之间不发生直接的依赖关系，其依赖关系是通过接口或抽象类产生的</li>
+<li>接口或抽象类不依赖与实现类</li>
+<li>实现类依赖接口或抽象类</li>
+</ul>
+</li>
+<li><p>依赖的三种写法（也就是IOC常问的那几个点啦，很基础，不做扩展）</p>
+<ul>
+<li>1.构造函数传递依赖对象</li>
+<li>2.Setter方法传递依赖对象</li>
+<li>3.接口声明依赖对象</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>最佳实践：依赖倒置是6个原则中最难以实现的原则，它是实现开闭原则的重要途径，依赖倒置原则没有实现，就别想实现对扩展开放，对修改关闭。其实也就是做好”面向接口编程“就是了。</p>
+</li>
+</ul>
+<h3 id="接口隔离原则"><a href="#接口隔离原则" class="headerlink" title="接口隔离原则"></a>接口隔离原则</h3><ul>
+<li><p>定义：建立单一接口，不要建立臃肿庞大的接口。接口尽量细化，同时接口中的方法尽量少。（和单一职责原则别混了，单一职责更注重接口的职责上的）</p>
+<ul>
+<li>Clients should not be forced to depend upon interfaces that they don`t use.（客户端不应依赖于它不需要的接口）</li>
+<li>The dependency of one class to another one should depend on the smallest possible interface.（类间的依赖关系应该建立在最小的接口上）</li>
+</ul>
+</li>
+<li><p>保证接口的纯洁性</p>
+<ul>
+<li><p>接口要尽量小</p>
+<ul>
+<li>根据接口隔离原则拆分接口时，首先必须满足单一职责原则</li>
+</ul>
+</li>
+<li><p>接口要高内聚</p>
+<ul>
+<li>提高接口、类、模块的处理能力，减少对外的交互</li>
+</ul>
+</li>
+<li><p>定制服务</p>
+<ul>
+<li>单独为一个个体提供优良的服务。只提供访问者需要的方法。</li>
+</ul>
+</li>
+<li><p>接口的设计是有限度的</p>
+<ul>
+<li>接口粒度越小系统越灵活。但是，结构同时也越复杂，增加开发难度，降低可维护成本，所以接口设计要适度</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>最佳实践</p>
+<ul>
+<li>一个接口只服务于一个子模块或业务逻辑</li>
+<li>通过业务逻辑压缩接口中的public方法</li>
+<li>已经污染了的接口，尽量去修改，若变更的风险更大，则采用适配器模式进行转化处理</li>
+<li>根据不同的环境去拆分不同的接口，因地制宜</li>
+</ul>
+</li>
+</ul>
+<h3 id="迪米特法则"><a href="#迪米特法则" class="headerlink" title="迪米特法则"></a>迪米特法则</h3><ul>
+<li><p>定义：一个对象应该对其他对象有最少的了解。或者说一个类应该对自己需要耦合或者调用的类知道的最少，除了要调用的，其他的概不关心</p>
+</li>
+<li><p>Law of Demeter（LoD），也称为最少知识原则（Least Knowledge Principle，LKP）</p>
+<ul>
+<li>Only talk to your immediate friends.（只和直接的”朋友“「对象」交互，减少耦合）</li>
+<li>“朋友”间也是有距离的。对于需要耦合的类除了要调用的内容，其他的一概不知</li>
+<li>自己的就是自己的。如果一个方法放在本类中，既不增加类间关系，也对本类不产生负面影响，那就放置在本类中。</li>
+<li>谨慎使用Serializable。C/S上通过序列化传输信息，一边的属性改变了，另一边也要同步更新。否则会序列化失败（这个问题理论上不该出现的。实际项目中不好说）</li>
+</ul>
+</li>
+<li><p>最佳实践：迪米特法则的核心是类间解耦，弱耦合，从而提高类的复用率。不过会产生大量的中转类（或跳转类），提高了系统复杂性，同时也提高了维护难度。所以使用本法则时需要做权衡，在结构清晰的同时又做到高内聚，低耦合</p>
+</li>
+</ul>
+<h3 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h3><ul>
+<li><p>定义：Software entities like classes,modules and functions should be open for extension but closed for modifications.（软件实体，如：类，模块和函数应该对扩展开放，对修改关闭）</p>
+</li>
+<li><p>Java世界里最基础的设计原则</p>
+<ul>
+<li><p>项目的业务逻辑发生的变化有以下这几种类型</p>
+<ul>
+<li><p>逻辑变化</p>
+<ul>
+<li>只变化一个逻辑，而不涉及其他模块。可以修改原有类中的方法来完成（前提是所有的依赖或关联类都按照相同的逻辑处理）</li>
+</ul>
+</li>
+<li><p>子模块变化</p>
+<ul>
+<li>模块的变化会对其他的模块产生影响，低层次的模块变化必然会引起高层次的模块变化。因此，子模块变化，其高层次的模块也应相应做出改变</li>
+</ul>
+</li>
+<li><p>可见视图变化</p>
+<ul>
+<li>国内做项目经常会有这种情况，比如页面上的报表突然要你加一列之类的，这种除了视图上的变化，背后的各种逻辑也要做出相应的改变</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>重要性</p>
+<ul>
+<li><p>1.开闭原则对测试的影响</p>
+<ul>
+<li>如果代码扩展性很差，投产后又要做修改，那所有的测试都得从头到尾来一遍了</li>
+</ul>
+</li>
+<li><p>2.开闭原则可以提高复用性</p>
+<ul>
+<li>缩小代码的逻辑粒度，可以更好扩展，并且提高代码的复用性</li>
+</ul>
+</li>
+<li><p>3.开闭原则可以提高可维护性</p>
+<ul>
+<li>软件投产后，有时就需要维护人员去扩展程序。如果让他们去修改程序，他绝对会崩溃的</li>
+</ul>
+</li>
+<li><p>4.面向对象开发的要求</p>
+<ul>
+<li>因为所有的对象都有可能变化，所以需要在设计之初考虑可能变化的因素，留下接口，以便后续扩展</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="创建类模式"><a href="#创建类模式" class="headerlink" title="创建类模式"></a>创建类模式</h2><h3 id="单例模式（Singleton-Pattern）"><a href="#单例模式（Singleton-Pattern）" class="headerlink" title="单例模式（Singleton Pattern）"></a>单例模式（Singleton Pattern）</h3><ul>
+<li><p>定义：Ensure a class has only one instance,and provide a global point of access to it.（确保一个类只有一个实例，而且自行实例化并向系统提供这个实例）</p>
+<p>通用类图：</p>
+</li>
+<li><p>通用代码</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton &#123;    </span><br><span class="line">private static final Singleton singleton = new Singleton();</span><br><span class="line"> //限制产生多个对象    </span><br><span class="line"> private Singleton()&#123;   </span><br><span class="line"> &#125;   </span><br><span class="line">  //通过该方法获得实例对象    </span><br><span class="line">  public static Singleton getSingleton()&#123;        </span><br><span class="line">  return singleton;   </span><br><span class="line">   &#125;     </span><br><span class="line">   //类中其他方法，尽量是 static   </span><br><span class="line">   public static void doSomething()&#123;   </span><br><span class="line">    &#125; </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>使用场景</p>
+<ul>
+<li>要求生成唯一序列号的场景</li>
+<li>在整个项目中需要一个共享访问点或共享数据，例如一个web页上的计数器，可以不用把每次刷新都记录到数据库中，使用单例模式保持计数器的值，并确保是线程安全的。</li>
+<li>创建一个对象需要消耗的资源过多，如需要访问IO和数据库等资源</li>
+<li>需要定义大量的静态常量和静态方法（如工具类）的环境，可以采用单例模式（也可以直接声明为static）</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li><p>在高并发的情况下，要注意单例模式的线程同步问题</p>
+<p>如果是用懒汉式，而非通用的饿汉式，会有线程安全问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton&#123;</span><br><span class="line">	private static final Singleton singleton = null;</span><br><span class="line">	//限制产生多个对象</span><br><span class="line">	prrivate Singleton()&#123;&#125;</span><br><span class="line">	//通过get方法获得实例对象</span><br><span class="line">	public static Singleton getSingleton()			 &#123;</span><br><span class="line">		if(singleton == null)&#123;</span><br><span class="line">			singleton = new Singleton();</span><br><span class="line">		&#125;</span><br><span class="line">		return singleton;</span><br><span class="line">	&#125;</span><br><span class="line">	//类中的其他方法，尽量是static的</span><br><span class="line">	public static void method()&#123;...&#125;	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在高并发的情况下，可能会在内存中出现多个实例。如线程A执行到singleton = new Singleton()l;但还没获得对象（即对象还没初始化完），这时线程B执行singleton == null判断，因为对象还没初始化完，所以B会认为没这个对象，进而去创建对象。对于这种情况可以通过给获取实例方法加锁：</p>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    private static Singleton instance;</span><br><span class="line">    private Singleton ()&#123;&#125;</span><br><span class="line">public static synchronized Singleton getInstance() &#123;</span><br><span class="line">    if (instance == null) &#123;</span><br><span class="line">        instance = new Singleton();</span><br><span class="line">    &#125;</span><br><span class="line">    return instance;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<pre><code>或者双检锁来避免：</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">    private volatile static Singleton singleton;</span><br><span class="line">    private Singleton ()&#123;&#125;</span><br><span class="line">    public static Singleton getSingleton() &#123;</span><br><span class="line">    if (singleton == null) &#123;</span><br><span class="line">        synchronized (Singleton.class) &#123;</span><br><span class="line">        if (singleton == null) &#123;</span><br><span class="line">            singleton = new Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return singleton;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<pre><code>- 此外，需要考虑对象复制的情况。在Java中对象默认是不可复制的，若实现了Cloneable接口，并实现了clone方法，可以直接通过对象复制产生一个新的对象，对象赋值不需要调用类的构造函数，因此即使是私有的构造函数，对象也可以被复制。</code></pre><ul>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>因为单例模式只有一个实例，减少了内存开支，特别是对于需要频繁创建、销毁的对象而言，优势就很明显了</li>
+<li>减少了系统性能开销，当一个对象的产生需要比较多的资源时，可以在系统启动时直接产生一个单例对象（比如说配置读取），然后用永久驻留内存的方式解决（在Java中需要注意JVM的垃圾回收）</li>
+<li>可以避免对资源的多重占用</li>
+<li>可以在系统设置全局的访问点，优化和共享资源访问</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>单例模式一般没有接口，扩展很难，除了修改代码基本上没有第二种途径可以实现</li>
+<li>单例模式对测试是不利的。在并行开发环境中，单例模式没完成是没法进行测试的，没有接口也不能使用mock的方式虚拟一个对象</li>
+<li>单例模式与单一职责原则有冲突，一个类应该只实现一个逻辑，而不关心它是否是单例的，是不是要单例取决于环境</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>（有上限的）多例模式</p>
+<ul>
+<li><p>需要产生固定数量对象的模式。采用有上限的多例模式，我们可以在设计时决定在内存中有多少个实例，方便系统进行扩展，修正单例可能存在的性能问题，提高响应速度。如读取文件，可以用多个reader进行读取。</p>
+<p>多例模式示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">import java.text.*;</span><br><span class="line">import java.util.*;</span><br><span class="line">class NumberFormatTest</span><br><span class="line">&#123;</span><br><span class="line">   public static void displayNumber(Double d,Locale l)</span><br><span class="line">   &#123;</span><br><span class="line">       NumberFormat nf;</span><br><span class="line">       String dOut;</span><br><span class="line">       nf = NumberFormat.getNumberInstance(l);</span><br><span class="line">       dOut = nf.format(d);</span><br><span class="line">       System.out.println(dOut + &quot; &quot; + l.toString());</span><br><span class="line">   &#125;</span><br><span class="line">   public static void main(String[] args)</span><br><span class="line">   &#123;</span><br><span class="line">       displayNumber(1234567.89,new Locale(&quot;en&quot;,&quot;US&quot;));</span><br><span class="line">       displayNumber(1234567.89,new Locale(&quot;de&quot;,&quot;DE&quot;));</span><br><span class="line">       displayNumber(1234567.89,new Locale(&quot;fr&quot;,&quot;FR&quot;));</span><br><span class="line">       displayNumber(1234567.89,new Locale(&quot;zh&quot;,&quot;CN&quot;));</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>最佳实践：常见的就是Spring里的Bean，默认就是单例的</p>
+</li>
+</ul>
+<h3 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h3><ul>
+<li><p>定义：Define an interface for creating an object,but let subclasses decide which class to instantiate.Factory Method lets a class defer instantiation to subclasses.（定义一个用于创建对象的接口，哪一个类。工厂方法使一个类的实例化延迟到其子类）</p>
+<p>通用类图：</p>
+</li>
+<li><p>通用代码</p>
+<p>抽象产品类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Product&#123;</span><br><span class="line">	//产品类的公共方法</span><br><span class="line">	public void method1()&#123;...&#125;</span><br><span class="line">	//抽象方法</span><br><span class="line">	public abstract void method2();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">具体的产品类可以有多个，都继承于抽象产品类。如：</span><br><span class="line">public class ConcreteProduct1 extends Product&#123;</span><br><span class="line">	public void method2()&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ConcreteProduct2 extends Product&#123;</span><br><span class="line">	public void method2()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象工厂负责定义产品的产生，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Creator&#123;</span><br><span class="line">	//创建一个产品对象，其输入的参数可以自行设置</span><br><span class="line">	public abstract &lt;T extends Product&gt; T createProduct(class&lt;T&gt; c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">具体工厂类： </span><br><span class="line">public class ConcreteCreator extends Creator &#123; </span><br><span class="line">  public &lt;T extends Product&gt; T createProduct(Class&lt;T&gt; c)&#123;       			   Product product=null;       </span><br><span class="line">  try &#123;          </span><br><span class="line">   product = (Product)Class.forName(c.getName()).newInstance();       </span><br><span class="line">	&#125; catch (Exception e) &#123;         </span><br><span class="line">     //异常处理        </span><br><span class="line">     &#125;       </span><br><span class="line">      return (T)product;       </span><br><span class="line">   &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		Creator c = new ConcreteCreator();</span><br><span class="line">	Product p = c.createProduct(ConcreteProduct1.class);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>良好的封装性，代码结构清晰</li>
+<li>扩展性非常优秀。在增加产品类的情况下，只需要适当的修改工厂类或者扩展一个工厂类即可“拥抱变化”</li>
+<li>屏蔽产品类。调用者不需要去关系产品类有没发生什么变化，只要产品给他的接口保持不变即可</li>
+<li>工厂方法模式是一个典型的解耦框架。高层模块只需要知道产品的抽象类，其他的实现类都不需要关心</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>工厂方法模式是new一个对象的替代品，所以在所有需要生成对象的地方都可以使用，但是需要慎重地考虑是否需要增加一个工厂类进行管理，会增加代码的复杂度</li>
+<li>需要灵活地、可扩展的框架时，可以采用工厂方法模式。</li>
+<li>在异构项目中，如通过webservice与非Java项目交互</li>
+<li>可以使用在测试驱动开发的框架下。如：测试一个类A，就需要把与类A有关联关系的其他类也同时产生出来，我们可以使用工厂方法模式把其他类虚拟出来，避免和类A的耦合</li>
+</ul>
+</li>
+<li><p>扩展</p>
+<ul>
+<li><p>（缩小为）简单工厂模式</p>
+<ul>
+<li>如果一个模块仅需要一个工厂类，那没必要把它生产出来，直接用静态方法就可以了</li>
+</ul>
+</li>
+<li><p>（升级为）多个工厂类</p>
+<ul>
+<li>项目比较复杂，初始化一个对象比较耗费精力时，可以让每个具体的产品类都对应一个创建者，每个创建者独立负责创建对应的 产品对象，非常符合单一职责原则</li>
+</ul>
+</li>
+<li><p>替代单例模式</p>
+<ul>
+<li>在项目中可以产生一个单例构造器，所有需要产生单例的类都遵循一定的规则（构造方法是private），然后通过扩展该框架，只需要输入一个类型就可以获得一个唯一的实例</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonFactory&#123;</span><br><span class="line">	private static Singleton singleton;</span><br><span class="line">	static&#123;</span><br><span class="line">		try&#123;</span><br><span class="line">			Class c1 = Class.forName(Singleton.class.getName());</span><br><span class="line">			//获得无参构造方法</span><br><span class="line">			Constuctor constructor = c1.getDelaredConstructor();</span><br><span class="line">			//设置无参构造是可以访问的</span><br><span class="line">			constuctor.setAccessble(true);</span><br><span class="line">			//产生一个实例对象</span><br><span class="line">			singleton = (Singleton)constructor.newInstance();</span><br><span class="line">		&#125;catch(Exception e)&#123;...&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	//通过get方法获得实例对象</span><br><span class="line">	public static Singleton getSingleton()			 &#123;</span><br><span class="line">		return singleton;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<pre><code>- 延迟初始化
+
+    - 一个对象被消费完后，不立即释放，工厂保持其初始状态，等待再次被使用。这里是通过一个Map来存储已被初始化的对象。</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public class ProductFactory&#123;</span><br><span class="line">	private static final Map&lt;String,Product&gt; prMap = new HashMap&lt;&gt;();</span><br><span class="line">	public static synchronized Product createProduct(String type) throws Exception&#123;</span><br><span class="line">		Product product = null;</span><br><span class="line">		//如果Map中已经有这个对象</span><br><span class="line">		if(prMap.containsKey(type))&#123;</span><br><span class="line">			product = prMap.get(type);</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			if(type.equals(&quot;Product1&quot;))&#123;</span><br><span class="line">				product = new ConcreteProduct1();</span><br><span class="line">			&#125;else&#123;</span><br><span class="line">				product = new ConcreteProduct2();</span><br><span class="line">			&#125;</span><br><span class="line">			//把对象放到缓存容器中</span><br><span class="line">			prMap.put(type,product);</span><br><span class="line">		&#125;</span><br><span class="line">		return product;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<pre><code>- 如JDBC的最大连接数就是通过这种思路来实现的</code></pre><ul>
+<li>最佳实践：JDBC连接数据库，硬件访问，Spring中Bean的加载</li>
+</ul>
+<h3 id="抽象工厂模式（Abstract-Factory-Pattern）"><a href="#抽象工厂模式（Abstract-Factory-Pattern）" class="headerlink" title="抽象工厂模式（Abstract Factory Pattern）"></a>抽象工厂模式（Abstract Factory Pattern）</h3><ul>
+<li><p>定义：Provide an interface for creating families of related or dependent objects without specyfying their concrete classes.（为创建一组相关或相互依赖的对象提供一个接口，而且无需指定它们的具体类）</p>
+<p>通用类图：</p>
+</li>
+<li><p>通用写法</p>
+<p>有两种产品，并且各有两个等级<br>抽象产品类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public abstract class AbstractProductA&#123;</span><br><span class="line">	//每个产品共有的方法</span><br><span class="line">	public void shareMethod()&#123;&#125;</span><br><span class="line">	//每个产品相同的方法，不同的实现</span><br><span class="line">	public abstract void doSomething();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public abstract class AbstractProductB&#123;</span><br><span class="line">	//每个产品共有的方法</span><br><span class="line">	public void shareMethod()&#123;&#125;</span><br><span class="line">	//每个产品相同的方法，不同的实现</span><br><span class="line">	public abstract void doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>产品实现类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class ProductA1 extends AbstractProductA&#123;</span><br><span class="line">	//每个产品相同的方法，不同的实现</span><br><span class="line">	public void doSomething()&#123;...//A1实现&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class ProductA2 extends AbstractProductA&#123;</span><br><span class="line">	//每个产品相同的方法，不同的实现</span><br><span class="line">	public void doSomething()&#123;...//A2实现&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>产品B类似。。。</p>
+<p>抽象工厂类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public abstract class AbstractCreator&#123;</span><br><span class="line">	//产品A</span><br><span class="line">	public abstract AbstractProductA createProductA();</span><br><span class="line">	//产品B</span><br><span class="line">	public abstract AbstractProductB createProductB();</span><br></pre></td></tr></table></figure>
+
+<p>实现类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public class Creator1 extends AbstractCreator&#123;</span><br><span class="line">	//生产产品等级1</span><br><span class="line">	public AbstractProductA createProductA()&#123;</span><br><span class="line">		return new ProductA1();</span><br><span class="line">	&#125;</span><br><span class="line">	public AbstractProductB createProductB()&#123;</span><br><span class="line">		return new ProductB1();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Creator2 extends AbstractCreator&#123;</span><br><span class="line">	//生产产品等级2</span><br><span class="line">	public AbstractProductA createProductA()&#123;</span><br><span class="line">		return new ProductA2();</span><br><span class="line">	&#125;</span><br><span class="line">	public AbstractProductB createProductB()&#123;</span><br><span class="line">		return new ProductB2();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>有M个产品等级就应该有M个实现工厂，在每个实现工厂中，实现不同产品族的生产任务</li>
+</ul>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>封装性</li>
+<li>产品族内的约束为非公开状态，具体的产品族内约束是在工厂内实现的</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>产品族扩展非常困难，扩展时相关的抽象类，实现类都得改，严重违反开闭原则</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>抽象工厂模式的使用场景定义非常简单：一个对象族（或是一组没有任何关系的对象）都有相同的约束，则可以使用抽象工厂模式。</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li>抽象工厂模式是产品族扩展困难，不是产品等级扩展困难，产品等级扩展还是比较容易的</li>
+</ul>
+</li>
+<li><p>最佳实践</p>
+<ul>
+<li>涉及不同系统操作的时候，或者说应用需要在不同平台上运行的时候，类似这类的场景都可以用</li>
+</ul>
+</li>
+</ul>
+<h3 id="建造者模式（Builder-Pattern）"><a href="#建造者模式（Builder-Pattern）" class="headerlink" title="建造者模式（Builder Pattern）"></a>建造者模式（Builder Pattern）</h3><ul>
+<li><p>定义：Separate rhw construction of a complex object fromits representation so that tha same construction can create different representation.（将一个复杂对象的构建与它的表示分离，是的同样的构建过程可以创建不同的表示）</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>产品类</li>
+<li>Builder抽象建造者</li>
+<li>ConcreteBuilder具体建造者</li>
+<li>Director导演类</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>产品类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class Product&#123;</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象类建造者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Builder&#123;</span><br><span class="line">	//设置产品的不同部分以获得不同的产品</span><br><span class="line">	public abstract void setPart();</span><br><span class="line">	//建造产品</span><br><span class="line">	public abstract Product buildProduct();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体建造者</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteBuilder extends Builder&#123;</span><br><span class="line">	private Product product = new Product();</span><br><span class="line">	//设置产品的不同部分以获得不同的产品</span><br><span class="line">	public void setPart()&#123;...&#125;</span><br><span class="line">	//建造产品</span><br><span class="line">	public Product buildProduct()&#123;</span><br><span class="line">		return product;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  导演类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class Director&#123;</span><br><span class="line">	private Builder builder = new ConcreteBuilder();</span><br><span class="line">	//构建不同的产品</span><br><span class="line">	public Product getProduct()&#123;</span><br><span class="line">		builder.setPart();</span><br><span class="line">		return builder.buildProduct();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>封装性</li>
+<li>建造者独立，容易扩展</li>
+<li>便于控制细节风险</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>相同的方法，不同的执行顺序，产生不同的事件结果时，可以采用建造者模式</li>
+<li>多个部件或零件，都可以装配到一个对象中，但是产生的运行结果又不相同时</li>
+<li>产品类非常复杂，或者产品类中的调用顺序不同产生了不同的效能这时候建造者模式也非常合适</li>
+<li>在对象创建过程中会使用到系统中的一些其他对象，这些对象在产品对象的创建过程中不易得到时，可以用建造者模式封装该对象的创建过程。（当然这只是补救措施，这种对象难以获得的情况，本身设计之初就有问题）</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li>建造者模式关注的是零件雷雄和装配工艺（顺序），这是它与工厂方法模式最大的不同</li>
+</ul>
+</li>
+<li><p>最佳实践</p>
+<ul>
+<li>使用时可以结合模板方法模式使用，效果贼好</li>
+</ul>
+</li>
+</ul>
+<h3 id="原型模式（Prototype-Pattern）"><a href="#原型模式（Prototype-Pattern）" class="headerlink" title="原型模式（Prototype Pattern）"></a>原型模式（Prototype Pattern）</h3><ul>
+<li><p>定义：Specitying the kinds of objects to create using a prototypical instance,and create new objects by copying this prototype.（用原型示例指定创建对象的种类，并且通过拷贝这些原型创建新的对象）</p>
+<p>通用类图：</p>
+</li>
+<li><p>通用代码</p>
+<p>（需要继承Cloneable接口，毕竟需要去复制）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class PrototypeClass implements Cloneable&#123;</span><br><span class="line">	//覆写父类的Object方法</span><br><span class="line">	@Override</span><br><span class="line">	public PrototypeClass clone()&#123;</span><br><span class="line">		PrototypeClass prototypeClass = null;</span><br><span class="line">		try&#123;</span><br><span class="line">			prototypeClass = (PrototypeClass)super.clone();</span><br><span class="line">		&#125;catch(Exception e)&#123;...&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return prototypeClass;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>性能优良：原型模式是二进制流的拷贝，比直接new一个对象性能好很多，特别是要在循环体内创建大量对象时</li>
+<li>逃避构造函数的约束</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>直接在内存中拷贝，构造函数是不会执行的，减少了约束</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>资源优化场景：如类初始化时要消耗很多的资源（数据、硬件资源等）</li>
+<li>有性能和安全要求的场景（new一个对象需要非常繁琐的数据准备或访问权限）</li>
+<li>一个对象多个修改者的场景（高并发场景。原型模式一般和工厂模式一起出现「Spring框架就是如此」）</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li><p>构造函数不会被执行</p>
+</li>
+<li><p>浅拷贝和深拷贝</p>
+<ul>
+<li><p>浅拷贝</p>
+<ul>
+<li><p>Object类提供的方法clone()只是拷贝本对象，对象内部的数组、引用对象等都不拷贝，还是指向原生对象的内部元素地址，其他的原始类型比如int、long、char、String等都会被拷贝</p>
+</li>
+<li><p>注意：使用原型模式时，引用的成员变量必须满足两个条件才不会被拷贝：</p>
+<ul>
+<li>1.是类的成员变量，而不是方法内变量</li>
+<li>2.必须是一个可变的引用对象，而不是一个原始类型或不可变对象</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>深拷贝</p>
+<ul>
+<li>对私有变量进行独立拷贝</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>clone与final</p>
+<ul>
+<li>对象的clone与对象内的final关键字是有冲突的</li>
+</ul>
+</li>
+<li><p>最佳实践：Spring的对象既可以是单例，也可以用原型模式创建多个对象，以应对高并发的情况</p>
+</li>
+</ul>
+<h2 id="结构类模式"><a href="#结构类模式" class="headerlink" title="结构类模式"></a>结构类模式</h2><h3 id="代理模式（Proxy-Pattern）"><a href="#代理模式（Proxy-Pattern）" class="headerlink" title="代理模式（Proxy Pattern）"></a>代理模式（Proxy Pattern）</h3><ul>
+<li><p>定义：Provide a surrogate or placeholder for another object tocontrol access to it.（为其他对象提供一个代理以控制对这个对象的访问）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Subject 抽象主体角色</li>
+<li>RealSubject 具体主题角色（被委托角色、被代理角色）</li>
+<li>Proxy 代理主题角色（委托类、被代理类）</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>抽象主题类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Subject&#123;</span><br><span class="line">	//定义一个方法</span><br><span class="line">	public void request();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>真实主题类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public class RealSubject impelements Subject&#123;</span><br><span class="line">	//实现方法</span><br><span class="line">	public void request()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代理类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public class Proxy implements Subject&#123;</span><br><span class="line">	//要代理哪个实现类</span><br><span class="line">	private Subject subject = null;</span><br><span class="line">	//默认被代理者</span><br><span class="line">	public Proxy()&#123;</span><br><span class="line">		this.subject = new Proxy();</span><br><span class="line">	&#125;</span><br><span class="line">	//通过构造函数传递代理者</span><br><span class="line">	public Proxy(Object...objects)&#123;&#125;</span><br><span class="line">	//实现接口中定义的方法</span><br><span class="line">	public void request()&#123;</span><br><span class="line">		this.before();</span><br><span class="line">		this,subject.request();</span><br><span class="line">		this.after();</span><br><span class="line">	&#125;</span><br><span class="line">	//预处理</span><br><span class="line">	private void before()&#123;</span><br><span class="line">		//do something</span><br><span class="line">	&#125;</span><br><span class="line">	//善后处理</span><br><span class="line">	private void after()&#123;</span><br><span class="line">		//do something</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>职责清晰</li>
+<li>高扩展性</li>
+<li>智能化</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>减轻被代理类的负担，就像一个律师或明星代理人一样。对于不希望参与到中间过程的是是非非，就可以用代理类来完成</li>
+</ul>
+</li>
+<li><p>扩展</p>
+<ul>
+<li><p>普通代理</p>
+<ul>
+<li>客户端只能访问代理角色，而不能访问其真实角色</li>
+</ul>
+</li>
+<li><p>强制代理</p>
+<ul>
+<li>在设计模式中较为“另类”。它要通过真实角色查找到代理，否则不能访问。只有通过真实角色指定的代理才能够访问，由真实角色管理代理</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>补充</p>
+<ul>
+<li>代理也是有“个性”的，它除了实现主题接口，还可以实现其他的接口以完成不同的任务</li>
+</ul>
+</li>
+<li><p>动态代理</p>
+<ul>
+<li><p>根据被代理的接口生成所有的方法</p>
+</li>
+<li><p>意图</p>
+<ul>
+<li>横切面编程，在不改变已有代码结构的情况下增强或控制对象的行为。</li>
+</ul>
+</li>
+<li><p>首要条件</p>
+<ul>
+<li>被代理的类必须要实现一个接口</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>最佳实践：Spring AOP</p>
+</li>
+</ul>
+<h3 id="适配器模式（Adapter-Pattern）"><a href="#适配器模式（Adapter-Pattern）" class="headerlink" title="适配器模式（Adapter Pattern）"></a>适配器模式（Adapter Pattern）</h3><ul>
+<li><p>定义：Convert the interface of a class into another interface clients except.Adapter lets classes work together that couldn`t otherwise because of incompatible interfaces.（将一个类的接口变换成客户端所期待的另一种接口，从而使原本因接口不匹配而无法在一起工作的两个类能够一起工作）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Target 目标角色</li>
+<li>Adaptee 源角色（被适配者）</li>
+<li>Adapter 适配器角色</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>目标角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Target&#123;</span><br><span class="line">	//目标角色自己的方法</span><br><span class="line">	public void request();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>目标角色的实现类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteTarget impelements Target&#123;</span><br><span class="line">	public void request()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>源角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public class Adaptee&#123;</span><br><span class="line">	//原有的业务逻辑</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>适配器角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public class Adapter extends Adaptee implements Target&#123;</span><br><span class="line">	public void request()&#123;</span><br><span class="line">		super.doSomething();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;		</span><br><span class="line">		//原有的业务逻辑</span><br><span class="line">		Target target1 = new ConcreteTarget();</span><br><span class="line">		target1.request();</span><br><span class="line">		//增加了适配器角色后的业务逻辑</span><br><span class="line">		Target target2 = new Adapter();</span><br><span class="line">		target.request();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>适配器模式可以让两个没有任何关系的类在一起运行，只要适配器这个角色能够搞定它们就成</li>
+<li>增加了类的透明性。我们访问的Target目标角色，它的具体实现都委托给了源角色，而这些对高层次是透明的，也是它不需要关系的</li>
+<li>提高了类的复用度，源角色在原有系统中能正常使用，而在目标角色中也能充当新的“演员”</li>
+<li>灵活性非常好，适配器增删对其它代码不造成影响</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>修改已投产的接口时，适合用适配器模式。如：系统扩展了，需要使用一个已有或新建立的类，但这个理由不符合系统的接口，这时就可以使用适配器模式了</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li>在详细设计阶段最好不要考虑适配器模式，它更适合解决正在服役的项目问题，应该在扩展应用的时候再去考虑它。此外，系统必须符合里氏替换原则，否则即使在适合使用适配器的场景下也会带来非常大的风险</li>
+</ul>
+</li>
+<li><p>扩展</p>
+<ul>
+<li><p>对象适配器</p>
+<ul>
+<li>是对象合成关系（类的关联关系），由于是通过类间关系进行耦合的，因此在设计时就比较灵活，如：修补源角色的隐形缺陷、管联其它对象等</li>
+</ul>
+</li>
+<li><p>类适配器</p>
+<ul>
+<li>类间继承，只能通过覆写原角色的方法进行扩展</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>最佳实践：适配器模式是一种补偿模式（或者说“补救”模式），所以在补救系统时才会使用到</p>
+</li>
+</ul>
+<h3 id="桥梁模式（Bridge-Pattern）又叫做桥接模式"><a href="#桥梁模式（Bridge-Pattern）又叫做桥接模式" class="headerlink" title="桥梁模式（Bridge Pattern）又叫做桥接模式"></a>桥梁模式（Bridge Pattern）又叫做桥接模式</h3><ul>
+<li><p>定义：Decouple an abstraction from its implementation so that the two can vary independently.（将抽象和实现解耦，使得两者可以独立的变化）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Abstraction 抽象化角色</li>
+<li>Implementor 实现化角色</li>
+<li>RefinedAbstraction 修正抽象化角色</li>
+<li>ConcreteImplementor 具体实现化角色</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>实现化角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface Implementor&#123;</span><br><span class="line">	//基本方法</span><br><span class="line">	public void doSomething();</span><br><span class="line">	public void doAnything();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体实现化角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteImplementor1 implements Implementor&#123;</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">	public void doAnything()&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ConcreteImplementor2 implements Implementor&#123;</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">	public void doAnything()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象化角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Abstraction&#123;</span><br><span class="line">	//定义对实现化角色的引用</span><br><span class="line">	private Implementor imp;</span><br><span class="line">	//约束子类必须实现该构造函数</span><br><span class="line">	public Abstraction(Implementor _imp)&#123;</span><br><span class="line">		this.imp = _imp;</span><br><span class="line">	&#125;</span><br><span class="line">	//自身的行为和属性</span><br><span class="line">	public void request()&#123;</span><br><span class="line">		this.imp.doSomething();</span><br><span class="line">	&#125;</span><br><span class="line">	//获得实现化角色</span><br><span class="line">	public Implementor getImp()&#123;</span><br><span class="line">		return imp;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体抽象化角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class RefinedAbstraction extends Abstraction&#123;</span><br><span class="line">	//覆写构造函数</span><br><span class="line">	public RefinedAbstraction(Implementor _imp)&#123;</span><br><span class="line">		super(_imp);</span><br><span class="line">	&#125;</span><br><span class="line">	//修正父类的行为</span><br><span class="line">	@Override</span><br><span class="line">	public void request()&#123;</span><br><span class="line">		//业务的处理</span><br><span class="line">		super.request();</span><br><span class="line">		super.getImp().doAnything();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		//定义一个实现化角色</span><br><span class="line">		Implementor imp = new ConcreteImplementor1();</span><br><span class="line">		//定义一个抽象化角色</span><br><span class="line">		Abstraction abs = new RefinedAbstraction(imp);</span><br><span class="line">		//执行行为</span><br><span class="line">		abs.request();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>抽象和实现分离</li>
+<li>优秀的扩充能力</li>
+<li>实现细节对客户透明</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>不希望或不适用使用继承的场景。如：继承层次过渡、无法更细化设计颗粒等场景</li>
+<li>接口或抽象类不稳定的场景</li>
+<li>重用性要求较高的场景</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li>意图是对变化的封装，尽量把可能变化的因素封装到最细，最小的逻辑单元中，防止风险扩散。若系统设计时发现类继承有N层时即可考虑使用桥梁模式</li>
+</ul>
+</li>
+<li><p>最佳实践：用于解决继承方式的缺点</p>
+</li>
+</ul>
+<h3 id="组合模式（Composite-Pattern）也叫合成模式，有时又叫部分-整体模式（Part-Whole）"><a href="#组合模式（Composite-Pattern）也叫合成模式，有时又叫部分-整体模式（Part-Whole）" class="headerlink" title="组合模式（Composite Pattern）也叫合成模式，有时又叫部分-整体模式（Part-Whole）"></a>组合模式（Composite Pattern）也叫合成模式，有时又叫部分-整体模式（Part-Whole）</h3><ul>
+<li><p>定义：Compose objects into tree structures to represent part-whole hierarchies.Composite lets clients treat individual objects and compositions of objects uniformly.（将对象组合成树形结构以表示“部分-整体”的层次结构，是得用户对单个对象和组合对象的使用具有一致性）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Component 抽象构件角色</li>
+<li>Leaf 叶子构件</li>
+<li>Composite 树枝构件</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>抽象构件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Component&#123;</span><br><span class="line">	//个体和整体都具有的共享</span><br><span class="line">	public void doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>树枝构件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class Composite extends Component&#123;</span><br><span class="line">	//构建容器</span><br><span class="line">	private ArrayList&lt;Component&gt; componentArrayList = new ArrayList&lt;Component&gt;();</span><br><span class="line">	//增加一个叶子构件或树枝构件</span><br><span class="line">	public void add(Component component)&#123;</span><br><span class="line">	this.componentArrayList.add(component);</span><br><span class="line">	&#125;</span><br><span class="line">	//删除一个叶子构件或树枝构件</span><br><span class="line">	public void remove(Component component)&#123;</span><br><span class="line">		this.componentArrayList.remove(component);</span><br><span class="line">	//获得分支下的所有叶子构件和树枝构件</span><br><span class="line">	public ArryList&lt;Component&gt; getChildern()&#123;</span><br><span class="line">		return this.componentArrayList;</span><br><span class="line">	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>树叶构件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public class Leaf extends Component&#123;</span><br><span class="line">	//覆写父类方法</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		//创建一个根节点</span><br><span class="line">		Composite root = new Componsite();</span><br><span class="line">		root.doSomething();</span><br><span class="line">		//创建一个树枝构件</span><br><span class="line">		Composite branch = new Composite();</span><br><span class="line">		//创建一个叶子节点</span><br><span class="line">		leaf leaf = new Leaf();</span><br><span class="line">		//建立整体</span><br><span class="line">		root.add(branch);</span><br><span class="line">		branch.add(leadf);</span><br><span class="line">	&#125;</span><br><span class="line">	//通过递归遍历树</span><br><span class="line">	public static void display(Composite root)&#123;</span><br><span class="line">		for(Component c : root.getChildren)&#123;</span><br><span class="line">			if(c instanceof Leaf)&#123;</span><br><span class="line">				//叶子节点</span><br><span class="line">				c.doSomething();</span><br><span class="line">			&#125;else&#123;</span><br><span class="line">				//树枝节点</span><br><span class="line">				display((Composite)c);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>从代码可以看出来，组合模式是对依赖倒转原则的破坏，不过它还有其他的变形</li>
+</ul>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>高层模块调用简单</li>
+<li>节点自由增加</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>与依赖倒置原则冲突，在使用时需要考虑清楚，它限制了接口影响的范围</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>扩展</p>
+<ul>
+<li><p>真实的组合模式</p>
+<ul>
+<li>树枝与树枝、树叶的关系都维护到数据库表里了，使用时从数据库读取，用for循环加递归就可以了</li>
+</ul>
+</li>
+<li><p>透明的组合模式</p>
+<ul>
+<li>组合模式有两种不同的实现，上面的例子是安全模式，另一种就是透明模式了。透明模式是把用来组合使用的方法放到抽象类中，不管叶子对象还是树枝对象都有相同的结构。不过如果使用不当，会在运行期出现问题，不同于安全模式把树枝节点和叶子节点彻底分开。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>组合模式的遍历</p>
+<ul>
+<li>既然是树，那肯定就要去遍历了，上面的代码示例是从上到下遍历的，若是从下往上，则需要再补个父节点的属性，这样一来，遍历树的前中后序遍历就都能实现了</li>
+</ul>
+</li>
+<li><p>最佳实践：在项目中，一般需要树形结构的地方就是组合模式了，比如XML的结构等</p>
+</li>
+</ul>
+<h3 id="装饰模式（Decorator-Pattern）"><a href="#装饰模式（Decorator-Pattern）" class="headerlink" title="装饰模式（Decorator Pattern）"></a>装饰模式（Decorator Pattern）</h3><ul>
+<li><p>定义：Attach addtional responsibilities to an dynamically keeping the same interface.Decorators provide a flexible alternative to subclassing for extending funtionality.（动态地给对象增加一些额外的职责。就增加功能来说，装饰模式相比生成子类更为灵活）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Component 抽象构件</li>
+<li>ConcreteComponent 具体构件</li>
+<li>Decorator 装饰角色</li>
+<li>ConcreteDecorator 具体装饰角色</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>抽象构件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Component&#123;</span><br><span class="line">	//抽象的方法</span><br><span class="line">	public abstract void operate();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体构件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteComponent extends Component&#123;</span><br><span class="line">	//具体实现</span><br><span class="line">	@Override</span><br><span class="line">	public void operate()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象装饰者（如果只有一个装饰类，可以不用抽象装饰者，直接实现就行）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Decorator extends Component&#123;</span><br><span class="line">	private Component component = null;</span><br><span class="line">	//通过构造函数传递被修饰者</span><br><span class="line">	public Decorator(Component _component)&#123;</span><br><span class="line">		this.component = _component;</span><br><span class="line">	&#125;</span><br><span class="line">	//委托给被修饰者执行</span><br><span class="line">	@Override</span><br><span class="line">	public void operate()&#123;</span><br><span class="line">		this.componet.operate();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体装饰类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteDecorator1 extends Decorator&#123;</span><br><span class="line">	//定义被修饰者</span><br><span class="line">	public ConcreteDecorator1(Component _component)&#123;</span><br><span class="line">		this.component = _component;</span><br><span class="line">	&#125;</span><br><span class="line">	//定义自己的修饰方法</span><br><span class="line">	private void method1()&#123;...&#125;</span><br><span class="line">	//重写父类的operation方法</span><br><span class="line">	@Override</span><br><span class="line">	public void operate()&#123;</span><br><span class="line">		this.method1();</span><br><span class="line">		super.operate();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ConcreteDecorator2 extends Decorator&#123;</span><br><span class="line">	//定义被修饰者</span><br><span class="line">	public ConcreteDecorator2(Component _component)&#123;</span><br><span class="line">		this.component = _component;</span><br><span class="line">	&#125;</span><br><span class="line">	//定义自己的修饰方法</span><br><span class="line">	private void method2()&#123;...&#125;</span><br><span class="line">	//重写父类的operation方法</span><br><span class="line">	@Override</span><br><span class="line">	public void operate()&#123;</span><br><span class="line">		this.method2();</span><br><span class="line">		super.operate();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		Component component = new ConcreteComponent();</span><br><span class="line">		//第一次修饰</span><br><span class="line">		component = new ConcreteDecorator1(component);</span><br><span class="line">		//第二次修饰</span><br><span class="line">		component = new ConcreteDecorator2(component);</span><br><span class="line">		//修饰后运行</span><br><span class="line">		component.operate();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>装饰类和被装饰类可以独立发展，而不会相互耦合。换句话说，Component类无需知道Decorator类，Decorator类是从外部来扩展Component类的功能，二Decorator也不用知道具体的构件</li>
+<li>装饰模式是继承关系的一种替代方案。我们看装饰类Decorator，不管装饰多少层，返回的对象还是Component，实现的还是is-a的关系</li>
+<li>装饰模式可以动态地扩展一个实现类的功能</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>多层的装饰比较复杂，会增加很多工作量</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>需要扩展一个类的功能，或给一个类增加附加功能</li>
+<li>需要动态地给一个对象增加功能，这些功能可以再动态地撤销</li>
+<li>需要为一批的兄弟类进行改装或加装功能</li>
+</ul>
+</li>
+<li><p>最佳实践：装饰模式是对继承的有力补充。毕竟继承不是万能的，考虑到易维护、易扩展、易复用等情况，可以用装饰模式来替代继承，通过动态加装功能来代替静态的，还可以解决类膨胀问题</p>
+</li>
+</ul>
+<h3 id="门面模式（Facade-Pattern）也叫做外观模式"><a href="#门面模式（Facade-Pattern）也叫做外观模式" class="headerlink" title="门面模式（Facade Pattern）也叫做外观模式"></a>门面模式（Facade Pattern）也叫做外观模式</h3><ul>
+<li><p>定义：Provide a unified interface to a set of interfaces in a subsystem.Facade defines a higher-level interface that makes the system  easier to use.（要求一个子系统的外部方式与其内部的通信必须通过一个统一的对象进行。门面模式提供一个高层次的接口，使得子系统更易于使用）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Facade 门面角色</li>
+<li>Subsystem 子系统角色</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>子系统</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class ClassA&#123;</span><br><span class="line">	public void doSomethingA()&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ClassB&#123;</span><br><span class="line">	public void doSomethingB()&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ClassC&#123;</span><br><span class="line">	public void doSomethingC()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>门面对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public lass Facade&#123;</span><br><span class="line">	//被委托的对象</span><br><span class="line">	private ClassA a = new ClassA();</span><br><span class="line">	private ClassB b = new ClassB();</span><br><span class="line">	private ClassC c = new ClassC();</span><br><span class="line">	//提供外部访问的方法</span><br><span class="line">	public void methodA()&#123;</span><br><span class="line">		this.a.doSomethingA();</span><br><span class="line">	&#125;</span><br><span class="line">	public void methodB()&#123;</span><br><span class="line">		this.b.doSomethingB();</span><br><span class="line">	&#125;</span><br><span class="line">	public void methodC()&#123;</span><br><span class="line">		this.c.doSomethingC();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>减少系统的相互依赖</li>
+<li>提高了灵活性</li>
+<li>提高安全性</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>不符合开闭原则。要是门面对象在投产后发现有问题，继承、覆写都不顶用的，只能去修改门面角色的代码了，这个风险之大就无需多说了</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>为一个复杂的模块或子系统提供一个供外界访问的接口</li>
+<li>子系统相对独立——外结对子系统的访问只要黑箱操作即可</li>
+<li>预防低水平人员带来的风险扩散</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li><p>一个子系统可以有多个门面</p>
+<ul>
+<li>门面已经达到不能忍受的地步了，就要去把一个门面拆成多个</li>
+<li>子系统可以提供不同的访问路径，应对不同的业务需求</li>
+</ul>
+</li>
+<li><p>门面不参与子系统内的业务逻辑</p>
+</li>
+</ul>
+</li>
+<li><p>最佳实践：使用门面模式可以对门面进行单元测试，约束项目成员的代码质量，避免人员带来的风险</p>
+</li>
+</ul>
+<h3 id="享元模式（Flyweight-Pattern）"><a href="#享元模式（Flyweight-Pattern）" class="headerlink" title="享元模式（Flyweight Pattern）"></a>享元模式（Flyweight Pattern）</h3><ul>
+<li><p>定义：Use sharing to support large numbers of fine-grained objects efficiently.（使用共享对象可以有效地支持大量的细粒度对象）</p>
+<p>通用类图：</p>
+<ul>
+<li>内部状态</li>
+<li>外部状态</li>
+</ul>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Flyweight 抽象享元角色</li>
+<li>ConcreteFlyweight 具体享元角色</li>
+<li>FlyweightFactory 享元工厂</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>抽象享元角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Flyweight&#123;</span><br><span class="line">	//内部状态</span><br><span class="line">	private String intrinsic;</span><br><span class="line">	//外部状态</span><br><span class="line">	protected final String extrinsic;</span><br><span class="line">	//要求享元角色必须接受外部状态</span><br><span class="line">	public Flyweight(String _extrinsic)&#123;</span><br><span class="line">		this.extrinsic = _extrinsic;</span><br><span class="line">	&#125;	</span><br><span class="line">	//定义业务操作</span><br><span class="line">	public abstract void operate();</span><br><span class="line">	//内部状态的getter/setter</span><br><span class="line">	public void setIntrinsic(String intrinsic)&#123;</span><br><span class="line">		this.intrinsic = intrinsic;</span><br><span class="line">	&#125;</span><br><span class="line">	public String  getIntrinsic()&#123;</span><br><span class="line">		return intrinsic;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体享元角色（注意：在程序开发中，确认只需要一次赋值的属性则设置为final类型，避免无意修改导致逻辑混乱，特别是Session级的常量或变量）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteFlyweight1 extends Flyweight&#123;</span><br><span class="line">	//接受外部状态</span><br><span class="line">	public ConcreteFlyweight1(String _extrinsic)&#123;</span><br><span class="line">		super(_extrinsic);</span><br><span class="line">	&#125;</span><br><span class="line">	//根据外部状态进行逻辑处理</span><br><span class="line">	public void operate()&#123;...//业务逻辑&#125;	</span><br><span class="line">&#125;</span><br><span class="line">public class ConcreteFlyweight2 extends Flyweight&#123;</span><br><span class="line">	//接受外部状态</span><br><span class="line">	public ConcreteFlyweight2(String _extrinsic)&#123;</span><br><span class="line">		super(_extrinsic);</span><br><span class="line">	&#125;</span><br><span class="line">	//根据外部状态进行逻辑处理</span><br><span class="line">	public void operate()&#123;...//业务逻辑&#125;	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>享元工厂</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class FlyweightFactory&#123;</span><br><span class="line">	//定义一个池容器</span><br><span class="line">	private static Map&lt;String,Flyweight&gt; pool = new HashMap&lt;&gt;();</span><br><span class="line">	//享元工厂</span><br><span class="line">	public static Flyweight  getFlyweight(String extrinsic)&#123;</span><br><span class="line">		//需要返回的对象</span><br><span class="line">		Flyweight flyweight = null;</span><br><span class="line">		//在池中没有该对象</span><br><span class="line">		if(pool.containsKey(extrinsic))&#123;</span><br><span class="line">			flyweight = pool.get(extrinsic);</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			//根据外部状态创建享元对象</span><br><span class="line">			flyweight = new ConcreteFlyweight1(extrinsic);</span><br><span class="line">			//放置到池中</span><br><span class="line">			pool.put(extrinsic,flyweight);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>系统中存在大量的相似对象</li>
+<li>细粒度的对象都具备较接近的外部状态，而且内部状态与环境无关，也就是说对象没有特定身份</li>
+<li>需要缓冲池的场景</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>扩展</p>
+<ul>
+<li>线程安全问题</li>
+<li>性能平衡。尽量使用Java基本类型作为外部状态</li>
+</ul>
+</li>
+<li><p>最佳实践</p>
+<ul>
+<li>虽然享元模式可以实现对象池，但是两者还是有比较大的差异的，对象池着重在对象的复用上，池中的每个对象是可替换的，它主要解决复用；享元模式主要解决的是对象的共享问题，如何建立多个可共享的细粒度对象则是其关注的重点</li>
+</ul>
+</li>
+</ul>
+<h2 id="行为类模式"><a href="#行为类模式" class="headerlink" title="行为类模式"></a>行为类模式</h2><h3 id="责任链模式"><a href="#责任链模式" class="headerlink" title="责任链模式"></a>责任链模式</h3><ul>
+<li><p>定义：Avoid coupling the sender of a request to its receiver by giving more than one object a chance to handle the request.Chain the receiving objects and pass the request along the chain util an object handles it.（使多个对象都有机会处理请求，从而避免了对象发送者和接收者之间的耦合关系。将这些对象连成一条链，并沿着这条链传递该请求，知道有对象处理它为止）</p>
+<p>通用类图：</p>
+</li>
+<li><p>通用代码</p>
+<p>抽象处理者（里面的Level,Request,Response假设已有，这里不写）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Handler&#123;</span><br><span class="line">	private Handler nextHandler;</span><br><span class="line">	//每个处理着都必须对请求作出处理</span><br><span class="line">	public final Response handleMessage(Request request)&#123;</span><br><span class="line">		Response response = null;</span><br><span class="line">		//判断是否是自己的处理级别</span><br><span class="line">		if(this.getHandlerLevel().equals(request.getHandlerLevel()))&#123;</span><br><span class="line">			response = this.echo(request);</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			//不属于自己的处理级别</span><br><span class="line">			//判断是否有下一个处理者</span><br><span class="line">			if(this.nextHandler != null)&#123;</span><br><span class="line">				response = this.nextHandler.handleMessage(request);</span><br><span class="line">			&#125;else&#123;</span><br><span class="line">				//根据具体业务处理</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	//设置下一个处理者是谁</span><br><span class="line">	public void setNext(Handler _handler)&#123;</span><br><span class="line">		this.handler = _handler;</span><br><span class="line">	&#125;</span><br><span class="line">	//每个处理者都有一个处理级别</span><br><span class="line">	protected abstract Level getHandler();</span><br><span class="line">	//每个处理者都必须实现处理任务</span><br><span class="line">	protected abstract Response echo(Request request);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体处理者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public ConcreteHandler1 extends Handler&#123;</span><br><span class="line">	//定义自己的处理逻辑</span><br><span class="line">	protected Response echo(Request request)&#123;...&#125;</span><br><span class="line">	//定义自己的处理级别</span><br><span class="line">	protected Level getHanderLevel()&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line">public ConcreteHandler2 extends Handler&#123;</span><br><span class="line">	//定义自己的处理逻辑</span><br><span class="line">	protected Response echo(Request request)&#123;...&#125;</span><br><span class="line">	//定义自己的处理级别</span><br><span class="line">	protected Level getHanderLevel()&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line">public ConcreteHandler3 extends Handler&#123;</span><br><span class="line">	//定义自己的处理逻辑</span><br><span class="line">	protected Response echo(Request request)&#123;...&#125;</span><br><span class="line">	//定义自己的处理级别</span><br><span class="line">	protected Level getHanderLevel()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		//声明所有的处理节点</span><br><span class="line">		Handler handler1 = new ConcreteHandler1();</span><br><span class="line">		Handler handler2 = new ConcreteHandler2();</span><br><span class="line">		Handler handler3 = new ConcreteHandler3();</span><br><span class="line">		//设置链中的阶段顺序</span><br><span class="line">		handler1.setNext(handler2);</span><br><span class="line">		handler2.setNext(handler3);</span><br><span class="line">		//提交请求，返回结果</span><br><span class="line">		Response response = handler1.handlerMessage(new Request());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>将请求和处理分开，请求者无需知道是谁处理的，处理者无需知道请求的全貌，两者解耦，提高系统灵活性</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>性能问题，每个请求都是从头遍历到尾，特别链一长，性能就很差了</li>
+<li>调试不方便。链一长，环节一多，它的方式又比较类似递归，调试起来就很麻烦</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li>链中节点数量需要控制，避免出现超长链的情况，一般的做法是在Handler中设置一个最大节点数量，在setNext方法中判断是否超过阈值，超过就不能建立</li>
+</ul>
+</li>
+<li><p>最佳实践：责任链模式在使用时也融合了模板方法模式，各个节点类的实现只需要关注自己的业务逻辑就行了，父类完成请求的传递，子类实现请求处理</p>
+</li>
+</ul>
+<h3 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h3><ul>
+<li><p>定义：Encapsulate a request as an object,thereby letting you parmeterize clients with deifferent requests,queue or log requests,and supprort undorable operations.（将一个请求封装成一个对象，从而让你使用不同的请求把客户端参数化，对请求排队或者记录请求日志，可以提供命令的撤销和恢复功能）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Receive 接收者角色</li>
+<li>Command 命令角色</li>
+<li>Invoker调用者角色</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>通用接收者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Receiver&#123;</span><br><span class="line">	//抽象接收者，定义每个接收者都必须完成的业务</span><br><span class="line">	public abstract void doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体的接收者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteReceiver1 extends Receiver&#123;</span><br><span class="line">	//每个接收者必须处理一定的业务逻辑</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ConcreteReceiver2 extends Receiver&#123;</span><br><span class="line">	//每个接收者必须处理一定的业务逻辑</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象的Command类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Command&#123;</span><br><span class="line">	//每个命令类都必须有一个执行命令的方法</span><br><span class="line">	public abstract void execute();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体的Command类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteCommand1 extends Command&#123;</span><br><span class="line">	//对那个receiver类进行命令处理</span><br><span class="line">	private Receiver receiver;</span><br><span class="line">	//构造函数传递接收者</span><br><span class="line">	public ConcreteCommand1(Receiver _receiver)&#123;</span><br><span class="line">		this.receiver = _receiver;</span><br><span class="line">	&#125;</span><br><span class="line">	//必须实现一个命令</span><br><span class="line">	public void execute()&#123;</span><br><span class="line">		this.receiver.doSomething();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ConcreteCommand2 extends Command&#123;</span><br><span class="line">	//对那个receiver类进行命令处理</span><br><span class="line">	private Receiver receiver;</span><br><span class="line">	//构造函数传递接收者</span><br><span class="line">	public ConcreteCommand2(Receiver _receiver)&#123;</span><br><span class="line">		this.receiver = _receiver;</span><br><span class="line">	&#125;</span><br><span class="line">	//必须实现一个命令</span><br><span class="line">	public void execute()&#123;</span><br><span class="line">		this.receiver.doSomething();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用者Invoker类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">pubic class Invoker&#123;</span><br><span class="line">	private Command command;</span><br><span class="line">	//接受命令</span><br><span class="line">	public void setCommand(Command _command)&#123;</span><br><span class="line">		this.command = _command;</span><br><span class="line">	&#125;</span><br><span class="line">	//执行命令</span><br><span class="line">	public void action()&#123;</span><br><span class="line">		this.command.execute();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		//声明调用者</span><br><span class="line">		Invoker invoker = new Invoker();</span><br><span class="line">		//定义接收者</span><br><span class="line">		Receiver receiver = new ConcreteReceiver1();</span><br><span class="line">		//定义一个发送给接收者的命令</span><br><span class="line">		Command command = new ConcreteCommand1(receiver);</span><br><span class="line">		//把命令交给调用者去执行</span><br><span class="line">		invoker.setCommand(command);</span><br><span class="line">		inviker.action();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>类间解耦</li>
+<li>可扩展性</li>
+<li>命令模式结合其他模式更优秀，如结合责任链模式，实现命令族解析任务；结合模板方法模式，则可以减少Command子类的膨胀问题</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>Command子类容易膨胀，有N个命令就会有N个Command子类</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景：在认为是命令的地方就可以使用命令模式，如：模拟DOS命令、GUI开发中按钮的点击事件也可以采用、触发-反馈机制的处理</p>
+</li>
+<li><p>反悔问题：命令有需要撤销的情况</p>
+<ul>
+<li>1.结合备忘录模式来还原最后的状态</li>
+<li>2.通过增加一个新的命令实现事件回滚</li>
+</ul>
+</li>
+<li><p>最佳实践：命令模式的Receiver在实际应用中一般都会被封装掉，减少Client对Receiver的依赖</p>
+</li>
+</ul>
+<h3 id="解释器模式（Interpreter-Pattern）-（少用）"><a href="#解释器模式（Interpreter-Pattern）-（少用）" class="headerlink" title="解释器模式（Interpreter Pattern） （少用）"></a>解释器模式（Interpreter Pattern） （少用）</h3><ul>
+<li><p>定义：Given a language ,define a representation for its grammar along with an interpreter that uses the representation to interpreter sentences in the language.（给定一门语言，定义它的文法的一种表示，并定义一个解释器，该解释器使用该表示来解释语言中的句子）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>AbstractExpression 抽象解释器</li>
+<li>TerminalExpression 终结符表达式</li>
+<li>NonterminalExpression 非终结符表达式</li>
+<li>Context 环境角色</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>抽象表达式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Expression&#123;</span><br><span class="line">	//每个表达式必须有一个解析任务</span><br><span class="line">	public abstract Object interpreter(Context context);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>终结符表达式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class TerminalExpression  extends Expression&#123;</span><br><span class="line">	//通常终结符表达式只有一个，但是有多个对象</span><br><span class="line">	public Object interpreter(Context context)&#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>非终结符表达式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class NonterminalExpression extends Expression&#123;</span><br><span class="line">	//每个非终结符表达式都会对其他表达式产生依赖</span><br><span class="line">	public NonterminalExpression (Expression... expression)&#123;&#125;</span><br><span class="line">	public Object interpreter(Context context)&#123;</span><br><span class="line">		//进行文法处理</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		Context context = new Context();</span><br><span class="line">		//通常定一个语法容器，容纳一个具体的表达式，通常为ArrayList，LinkedList，Stack等类型</span><br><span class="line">		Stack&lt;Expression&gt; stack = null;</span><br><span class="line">		for(;;)&#123;</span><br><span class="line">			//进行语法判断，并产生递归调用</span><br><span class="line">		&#125;</span><br><span class="line">		//产生一个语法树，由各个具体的语法分析进行解析</span><br><span class="line">		Expression expression =  new Expression();</span><br><span class="line">		//具体元素进到场景</span><br><span class="line">		expression.interpreter(context);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>扩展性，修改与法规则只要修改相应的非终结符表达式就可以了，若扩展语法，则只要增加非终结符类就可以了</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>容易引起类膨胀</li>
+<li>解释器模式采用递归调用方法</li>
+<li>效率问题</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>重复发生的问题可以用解释器模式</li>
+<li>一个简单的语法需要解释的场景</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li>尽量不要在重要的模块中使用解释器模式，否则维护会是一个很大的问题，在项目中可以使用脚本语言来代替解释器模式</li>
+</ul>
+</li>
+<li><p>最佳实践：解释器模式在实际开发中使用得非常少。因为它会引起效率、性能以及维护等问题。</p>
+</li>
+</ul>
+<h3 id="迭代器模式（Iterator-Pattern）"><a href="#迭代器模式（Iterator-Pattern）" class="headerlink" title="迭代器模式（Iterator Pattern）"></a>迭代器模式（Iterator Pattern）</h3><ul>
+<li><p>定义：Provide a way to access the elements of an aggregate object sequetially without exposing its underlying representation.（它提供一种方法访问容器对象中的各个元素，而又不需暴露该对象的内部细节）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Iterator 抽象迭代器</li>
+<li>ConcreteIterator 具体迭代器</li>
+<li>Aggregate 抽象容器</li>
+<li>ConcreteAggregate 具体容器</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>抽象迭代器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public interface Iterator&#123;</span><br><span class="line">	//遍历到下一个元素</span><br><span class="line">	public Object next();</span><br><span class="line">	//是否已经遍历到尾部</span><br><span class="line">	public boolean hasNext();</span><br><span class="line">	//删除当前指向的元素</span><br><span class="line">	public boolean remove();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体迭代器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteIterator implements Iterator&#123;</span><br><span class="line">	private Vector vector = new Vector();</span><br><span class="line">	//定义当前游标</span><br><span class="line">	public int cursor = 0;</span><br><span class="line">	@SuppressWarnings(&quot;uncheck&quot;)</span><br><span class="line">	public ConcreteIterator(Vector _vector)&#123;</span><br><span class="line">		this.vector = _vector;</span><br><span class="line">	&#125;</span><br><span class="line">	//判断是否到达尾部</span><br><span class="line">	public boolean hasNext()&#123;</span><br><span class="line">		if(this.cursor == this.vector.size())&#123;</span><br><span class="line">			return false;</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			return true;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	//返回下一个元素</span><br><span class="line">	public Object next()&#123;</span><br><span class="line">		Object result = null;</span><br><span class="line">		if(this.hasNext())&#123;</span><br><span class="line">			result = this.vector.get(this.cursor ++);</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			result = null;</span><br><span class="line">		&#125;</span><br><span class="line">		return result;</span><br><span class="line">	&#125;</span><br><span class="line">	//删除当前元素（开发系统时，还应考虑删除游标下一个元素）</span><br><span class="line">	public boolean remove()&#123;</span><br><span class="line">		this.vector.remove(this.cursor);</span><br><span class="line">		return true;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public interface Aggregate&#123;</span><br><span class="line">	//是容器必然有元素的增加</span><br><span class="line">	public void add(Object object);</span><br><span class="line">	//减少元素</span><br><span class="line">	public void remove(Object objct);</span><br><span class="line">	//由迭代器遍历所有元素</span><br><span class="line">	public Iterator iterator();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteAggregate implements Aggregate&#123;</span><br><span class="line">	//容纳对象的容器</span><br><span class="line">	private Vector vector = new Vector();</span><br><span class="line">	//增加一个元素</span><br><span class="line">	public void add(Object object)&#123;</span><br><span class="line">		this.vector.add(object);</span><br><span class="line">	&#125;</span><br><span class="line">	//返回迭代器对象</span><br><span class="line">	public Iterator iterator()&#123;</span><br><span class="line">		return new ConcreteIterator(this.vector);</span><br><span class="line">	&#125;</span><br><span class="line">	//删除一个元素</span><br><span class="line">	public void remove(Object object)&#123;</span><br><span class="line">		this.remove(object);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		//声明出容器</span><br><span class="line">		Aggregate agg = new ConcreteAggregate();</span><br><span class="line">		//产生对象数据放进去</span><br><span class="line">		agg.add(&quot;aaa&quot;);</span><br><span class="line">		agg.add(&quot;bbb&quot;);</span><br><span class="line">		//遍历</span><br><span class="line">		Iterator iterator = agg.iterator();</span><br><span class="line">		while(iterator.hasNext())&#123;</span><br><span class="line">			//输出元素。。。这鬼东西基本都很熟了</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>应用</p>
+<ul>
+<li>这个无需多讲，迭代器也有现成的，不需要自己手动造了</li>
+</ul>
+</li>
+<li><p>最佳实践</p>
+<ul>
+<li>这个也略过</li>
+</ul>
+</li>
+</ul>
+<h3 id="中介者模式"><a href="#中介者模式" class="headerlink" title="中介者模式"></a>中介者模式</h3><ul>
+<li><p>定义：Define an object that encapsulates how a set of objects interact.Mediator promotes loose coupling by keeping objects from referring to each other explicitly,and it lets you vary their interaction independently.（用一个中介者对象封装一系列对象的交互，中介者使各个对象不需要显示地相互作用，从而使其耦合松散，而且可以独立地改变它们之间的定义）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li><p>Mediator 抽象中介者角色</p>
+</li>
+<li><p>Concrete Mediator 具体终结者角色</p>
+</li>
+<li><p>Colleague 同事角色</p>
+<ul>
+<li><p>每一个同事都知道中介者角色，且通过中介者角色与其他同事通信。每个同事类行为有两种：</p>
+<ul>
+<li>1.同事本身行为，称为自发行为（Self-Method）</li>
+<li>2.依赖中介者才能完成的行为，叫做依赖方法（Dep-Method）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>抽象中介者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Mediator&#123;</span><br><span class="line">	//定义同事类</span><br><span class="line">	protected ConcreteConlleague1 c1;</span><br><span class="line">	protected ConcreteConlleague2 c2;</span><br><span class="line">	//通过getter/setter注入</span><br><span class="line">	public ConcreteColleague1 getC1()&#123;</span><br><span class="line">		return c1;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setC1(ConcreteColleague1 c1)&#123;</span><br><span class="line">		this.c1 = c1;</span><br><span class="line">	&#125;</span><br><span class="line">	public ConcreteColleague2 getC2()&#123;</span><br><span class="line">		return c2;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setC2(ConcreteColleague2 c2)&#123;</span><br><span class="line">		this.c2 = c2;</span><br><span class="line">	&#125;</span><br><span class="line">	//中介者模式的业务逻辑</span><br><span class="line">	public abstract void doSomething1();</span><br><span class="line">	public abstract void doSomething2();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通用中介者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteMediator extends Mediator&#123;</span><br><span class="line">	@Override</span><br><span class="line">	public void doSomething1()&#123;</span><br><span class="line">		//调用同事类的方法，只要是public的都可以调用</span><br><span class="line">		super.c1.selfMethod1();</span><br><span class="line">		super.c1.selfMethod2();</span><br><span class="line">	&#125;</span><br><span class="line">	public void doSomething2()&#123;</span><br><span class="line">		//调用同事类的方法，只要是public的都可以调用</span><br><span class="line">		super.c1.selfMethod1();</span><br><span class="line">		super.c1.selfMethod2();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象同事类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Colleague&#123;</span><br><span class="line">	protected Mediator mediator;</span><br><span class="line">	public Colleague(Mediator _mediator)&#123;</span><br><span class="line">		this.mediator = _mediator;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体同事类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteColleague1 extends Colleague&#123;</span><br><span class="line">	//通过构造函数传递中介者</span><br><span class="line">	public Colleague1(Mediator _mediator)&#123;</span><br><span class="line">		this.mediator = _mediator;</span><br><span class="line">	&#125;</span><br><span class="line">	//自有方法self-method</span><br><span class="line">	public void selfMethod1()&#123;...&#125;</span><br><span class="line">	//依赖方法dep-method</span><br><span class="line">	public void depMethod1()&#123;</span><br><span class="line">		//自己能处理的逻辑自己处理，处理不了的委托给中介者</span><br><span class="line">		super.mediator.doSomthing1();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ConcreteColleague2 extends Colleague&#123;</span><br><span class="line">	//通过构造函数传递中介者</span><br><span class="line">	public Colleague1(Mediator _mediator)&#123;</span><br><span class="line">		this.mediator = _mediator;</span><br><span class="line">	&#125;</span><br><span class="line">	//自有方法self-method</span><br><span class="line">	public void selfMethod2()&#123;...&#125;</span><br><span class="line">	//依赖方法dep-method</span><br><span class="line">	public void depMethod2()&#123;</span><br><span class="line">		//自己能处理的逻辑自己处理，处理不了的委托给中介者</span><br><span class="line">		super.mediator.doSomthing2();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>减少类间依赖，把原有的一对多依赖变成了一对一依赖，同事类只依赖中介者，减少了依赖，也降低了类间的耦合</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>中介类会膨胀得很大，逻辑很复杂。原本N个对象直接的相互依赖关系转换为中介者和同事类的依赖关系，同事类越多，中介者的逻辑就越复杂</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>并不是只要有多个依赖关系就可以使用中介者模式。中介者模式适用于多个对象紧密耦合的情况（在类图中出现蜘蛛网状结构），这种情况下就需要使用中介者模式，把蜘蛛网梳理为星型结构，使得原本复杂的关系变得简单</li>
+</ul>
+</li>
+<li><p>实际应用</p>
+<ul>
+<li>机场调度中心</li>
+<li>MVC框架：里面的controller就是一个中介者</li>
+<li>媒体网关</li>
+<li>中介服务</li>
+</ul>
+</li>
+<li><p>最佳实践</p>
+<ul>
+<li>N个对象之间产生了相互的依赖关系</li>
+<li>多个对象有依赖关系，但是依赖行为尚不确定或者有发生改变的可能，在这种情况下使用中介者模式可以降低风险扩散</li>
+<li>产品开发（如：MVC框架）</li>
+</ul>
+</li>
+</ul>
+<h3 id="备忘录模式（Memento-Pattern）"><a href="#备忘录模式（Memento-Pattern）" class="headerlink" title="备忘录模式（Memento Pattern）"></a>备忘录模式（Memento Pattern）</h3><ul>
+<li><p>定义：Without volating encapsulation,capture and externalize and object`s internal state so that the object can be resored to this state later.（在不破坏封装性的前提下，捕获一个对象的内部状态，并在该对象之外保存这个状态。这样以后就可以将该对象恢复到原先保存的状态）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Originator 发起人角色</li>
+<li>Memento 备忘录角色</li>
+<li>Caretaker 备忘录管理员角色</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>发起人角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class Originator&#123;</span><br><span class="line">	//内部状态</span><br><span class="line">	private String state = &quot;&quot;;</span><br><span class="line">	public String getState()&#123;</span><br><span class="line">		return state;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setSate(String state)&#123;</span><br><span class="line">		this.state = state;</span><br><span class="line">	&#125;</span><br><span class="line">	//创建一个备忘录</span><br><span class="line">	public Memento createMemento()&#123;</span><br><span class="line">		return new Memento(this.state);</span><br><span class="line">	&#125;</span><br><span class="line">	//恢复一个备忘录</span><br><span class="line">	public void restoreMemento(Memento _memento)&#123;</span><br><span class="line">		this.setState(_memento.getState());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>备忘录角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class Memento&#123;</span><br><span class="line">	//发起人的内部状态</span><br><span class="line">	private String state = &quot;&quot;;</span><br><span class="line">	//构造函数传递参数</span><br><span class="line">	public Memento(String  _state)&#123;</span><br><span class="line">		this.state = _state;</span><br><span class="line">	&#125;</span><br><span class="line">	public String getState()&#123;</span><br><span class="line">		return state;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setSate(String state)&#123;</span><br><span class="line">		this.state = state;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>备忘录管理员角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Caretaker&#123;</span><br><span class="line">	//备忘录对象</span><br><span class="line">	private Memento memento;</span><br><span class="line">	public Memento getMemento()&#123;</span><br><span class="line">		return memento;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setMemento(Memento memento)&#123;</span><br><span class="line">		this.memento = memento;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		//定义出发起人</span><br><span class="line">		Originator originator = new Originator();</span><br><span class="line">		//定义出备忘录管理员</span><br><span class="line">		Caretaker caretaker = new Caretaker();</span><br><span class="line">		//创建一个备忘录</span><br><span class="line">		caretaker.setMemento(originator.createMemento());</span><br><span class="line">		//恢复一个备忘录</span><br><span class="line">		originator.restoreMemento(caretaker.getMemento());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li>使用的场景太多了，标准的备忘录模式很难遇到，因此具体场景具体讨论</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>需要保存和恢复数据的相关状态场景</li>
+<li>提供一个可回滚的操作</li>
+<li>需要监控的副本场景。如要监控一个对象的属性，但是监控又不应该作为系统的主业务来调用，因此一般的做法是备份一个主线程中的对象，然后由分析程序来分析</li>
+<li>数据库连接的事务管理就是用的备忘录模式</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li>备忘录的生命周期。备忘录建立就要在“最近”的代码中使用，不用就应该被回收掉</li>
+<li>备忘录的性能。不要在频繁建立备份的场景中使用备忘录模式（比如在for循环中）。一是控制不了备忘录建立的对象数量；二是大对象的建立是要消耗资源的，系统的性能需要考虑。</li>
+</ul>
+</li>
+<li><p>扩展</p>
+<ul>
+<li>clone方式的备忘录。看到clone就知道，这个是结合原型模式来用啦，通过clone方法区产生一个备份对象，需要的时候再去还原。（可以使用在比较简单的或比较单一的场景中，尽量不要与其他对象产生严重的耦合关系）</li>
+<li>多状态备忘录模式。有时一个对象有多种状态，且都需要做备份。这时候用clone的方式可以，通过数据技术也行（DTO回写到临时表）。（如果要设计一个运行期决定被分状态的框架，建议使用AOP框架来实现，避免采用动态代理无谓地增加程序逻辑复杂性）</li>
+<li>多备份备忘录。比如说每天做数据库备份，需要还原时，根据时间戳把前些日子的备份拉出来恢复。这里这个时间戳也就是备份时做的标记，称为检查点（Check Point）。（内存溢出问题，该备份一旦产生就装入内存，没有任何销毁的意向，这是非常危险的。所以在系统设计之初就要严格限定备忘录的创建，建议增加Map的上线，否则系统很容易产生内存溢出的情况）</li>
+<li>封装得更好一点。使用一种全新的设计方法——双接口设计。在系统设计时，提供两个接口，一个是业务的正常接口，实现必要的业务逻辑，叫做宽接口；另一个是一个空接口，什么方法都没有，目的是提供给子系统外的模块访问，比如容器对象，这个叫做窄接口</li>
+</ul>
+</li>
+<li><p>最佳实践：数据库临时表作为缓存备份数据虽然是一个简单的办法，但是它加大了数据库操作的配；频繁度，把压力下放到数据库了，最好的解决办法就是使用备忘录模式</p>
+</li>
+</ul>
+<h3 id="观察者模式（Observer-Pattern）也叫做发布-订阅模式（Publish-subscribe）"><a href="#观察者模式（Observer-Pattern）也叫做发布-订阅模式（Publish-subscribe）" class="headerlink" title="观察者模式（Observer Pattern）也叫做发布/订阅模式（Publish/subscribe）"></a>观察者模式（Observer Pattern）也叫做发布/订阅模式（Publish/subscribe）</h3><ul>
+<li><p>定义：Define a one-to-many dependency between objects so that when one object changes state,all its dependents are notified and updated automatically.（定义对象间一种一对多的依赖关系，使得每当一个对象改变状态，则所有依赖于它的对象都会得到通知并被自动更新）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Subject 被观察者</li>
+<li>ConcreteSubject 具体的被观察者</li>
+<li>Observer 观察者</li>
+<li>ConcreteObserver 具体的观察者</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>被观察者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Subject&#123;</span><br><span class="line">	//定义一个观察者数组</span><br><span class="line">	private Vector&lt;Observer&gt; obsVector = new Vector&lt;&gt;();</span><br><span class="line">	//增加一个观察者</span><br><span class="line">	public void addObserver(Observer o)&#123;</span><br><span class="line">		this.obsVerctor.add(o);</span><br><span class="line">	&#125;</span><br><span class="line">	//删除一个观察者</span><br><span class="line">	public void removeObserver(Observer o)&#123;</span><br><span class="line">		this.obsVector.remove(o);</span><br><span class="line">	&#125;</span><br><span class="line">	//通知所有观察者</span><br><span class="line">	public void notifyObservers()&#123;</span><br><span class="line">		for(Observer o : this.obsVector)&#123;</span><br><span class="line">			o.update();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体被观察者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteSubject extends Subject&#123;</span><br><span class="line">	//具体的业务</span><br><span class="line">	public void doSomething()&#123;</span><br><span class="line">		...</span><br><span class="line">		super.notifyObservers();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>观察者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Observer&#123;</span><br><span class="line">		//更新方法</span><br><span class="line">		public void update();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体观察者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteObserver implements Observer&#123;</span><br><span class="line">	//实现更新方法</span><br><span class="line">	public void update()&#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		//创建一个被观察者</span><br><span class="line">		Subject subject = new ConcreteSubject();</span><br><span class="line">		//定义一个观察者</span><br><span class="line">		Observer observer = new ConcreteObserver();</span><br><span class="line">		//观察者观察被观察者</span><br><span class="line">		subject.addObserver(observer);</span><br><span class="line">		//观察者开始活动了</span><br><span class="line">		subject.doSomething();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>观察者和被观察者之间是抽象耦合</li>
+<li>建立一套触发机制。根据单一职责原则，每个类的职责是单一的，而观察者模式在类之间形成一条触发链，使得类可以被类触发</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>需要考虑开发效率和运行效率问题。一个被观察者，多个观察者，开发调试就会比较复杂。且Java中消息的通知默认是顺序执行，一个观察者卡壳会影响整体的执行效率。一般采用异步的方式来应对这种情况。此外，多级触发时的效率更低，设计时需要主义考虑</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>关联行为场景。（关联行为是可拆分的，而不是“组合”关系）</li>
+<li>事件多级触发场景</li>
+<li>跨系统的消息交换场景，如消息队列的处理机制</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li><p>广播链问题。因为观察者也可以是被观察者。所以是建议在一个观察者模式中最多出现一个对象即是观察者也是被观察者（也就是说消息最多转发一次「传递两次」）。</p>
+<ul>
+<li>它和责任链模式的最大区别就是观察者广播链在传播过程中消息是随时更改的，它是两个相邻节点协商的消息结构；责任链模式在消息传递过程中基本上保持消息不可变，如果要改变，也只能在原有消息上进行修正</li>
+</ul>
+</li>
+<li><p>异步处理问题。需要考虑线程安全和队列的问题</p>
+</li>
+</ul>
+</li>
+<li><p>扩展</p>
+<ul>
+<li><p>项目中真实的观察者模式</p>
+<ul>
+<li><p>观察者和被观察者之间的消息沟通</p>
+<ul>
+<li>被观察者状态改变会触发观察者的一个行为，同时会传递一个消息给观察者。不过在实际中观察者中的update方法一般接收两个参数，一个是被观察者，一个是DTO</li>
+</ul>
+</li>
+<li><p>观察者响应方式</p>
+<ul>
+<li><p>在一个观察者多个被观察者的情况下，就需要考虑观察者的性能了。要提高性能有两个方法</p>
+<ul>
+<li>1.用多线程，无论是观察者还是被观察者启动线程，都可以明显的提高系统性能。这种方案也就是通常说的异步架构</li>
+<li>2.缓存技术。无论是谁来，都有足够的资源来保证快速响应。不过代价是开发难度很大，压测要做充分，这种方案也就是常说的同步架构</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>发布/订阅模型</p>
+</li>
+</ul>
+</li>
+<li><p>最佳实践</p>
+<ul>
+<li>文件系统</li>
+<li>猫鼠游戏</li>
+<li>ATM取钱</li>
+<li>广播收音机</li>
+</ul>
+</li>
+</ul>
+<h3 id="状态模式（复杂）"><a href="#状态模式（复杂）" class="headerlink" title="状态模式（复杂）"></a>状态模式（复杂）</h3><ul>
+<li><p>定义：Allow an object to alter its behavior when its internal state changes.The object will appear to change its class.（当一个对象内在状态改变时允许其改变行为，这个对象看起来像改变了其类）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>State 抽象状态角色</li>
+<li>ConcreteState 具体状态角色</li>
+<li>Context 环境角色</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>抽象状态角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public abstract class State&#123;</span><br><span class="line">	//定义一个环境角色</span><br><span class="line">	protected Context context;</span><br><span class="line">	//设置环境角色</span><br><span class="line">	public void setContextState(Context  _context)&#123;</span><br><span class="line">	this.context = _context;</span><br><span class="line">	&#125;</span><br><span class="line">	//行为1</span><br><span class="line">	public abstract void handle1();</span><br><span class="line">	//行为2</span><br><span class="line">	public abstract void handle2();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>状态角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteState1 extends State&#123;</span><br><span class="line">	@Override</span><br><span class="line">	public void handle1()&#123;...//本状态下的逻辑&#125;</span><br><span class="line">	@Override</span><br><span class="line">	public void handle2()&#123;</span><br><span class="line">		//设置当前状态为state2</span><br><span class="line">		super.context.setContextState(Context.STATE2);</span><br><span class="line">		super.context.handle2();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ConcreteState2 extends State&#123;</span><br><span class="line">	@Override</span><br><span class="line">	public void handle2()&#123;...//本状态下的逻辑&#125;</span><br><span class="line">	@Override</span><br><span class="line">	public void handle1()&#123;</span><br><span class="line">		//设置当前状态为state1</span><br><span class="line">		super.context.setContextState(Context.STATE1);</span><br><span class="line">		super.context.handle1();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>环境角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public class Context&#123;</span><br><span class="line">	//定义状态</span><br><span class="line">	public final static State STATE1 = new ConcreteState1(); </span><br><span class="line">	public final static State STATE2 = new ConcreteState2();</span><br><span class="line">	//当前状态</span><br><span class="line">	private State currentState;</span><br><span class="line">	//获得当前状态</span><br><span class="line">	public State getCurrentState()&#123;</span><br><span class="line">		return currentState;</span><br><span class="line">	&#125;</span><br><span class="line">	//设置当前状态</span><br><span class="line">	public void setCurrentState(State  currentState)&#123;</span><br><span class="line">		this.currentState = currentState;</span><br><span class="line">		//切换状态</span><br><span class="line">		this.currentState.setContext(this);</span><br><span class="line">	&#125;</span><br><span class="line">	//行为委托</span><br><span class="line">	public void handle1()&#123;</span><br><span class="line">		this.currentState.handle1();</span><br><span class="line">	&#125;</span><br><span class="line">	public void handle2()&#123;</span><br><span class="line">		this.currentState.handle2();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		//定义环境角色</span><br><span class="line">		Context context = new Context();</span><br><span class="line">		//初始化状态</span><br><span class="line">		context.setCurrentState(new ConcreteState1());</span><br><span class="line">		//行为执行</span><br><span class="line">		context.handle1();</span><br><span class="line">		context.handle2();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>结构清晰</li>
+<li>遵循设计原则</li>
+<li>封装性非常好</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>子类会太多，会类膨胀，太多的子类不好管理</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>行为随状态改变而改变的场景</li>
+<li>条件，分支判断语句的替代者。程序中大量使用switch语句或if判断语句会导致程序结构不清晰，逻辑混乱，使用状态模式可以很好地避免这一问题</li>
+</ul>
+</li>
+<li><p>注意事项：在行为受状态约束的情况下可以使用状态模式，并且使用时对象的状态最好不要超过5个</p>
+</li>
+<li><p>最佳实践：状态间如果可以自由切换的话，需要把几种状态按照一定顺序重新组装一下，得用上状态模式+建造者模式。若是工作流开发，状态得用状态机（State Machine）来管理，也就是Context类的功能升级版。。。</p>
+</li>
+</ul>
+<h3 id="策略模式（Strategy-Pattern）也叫政策模式（Policy-Pattern）"><a href="#策略模式（Strategy-Pattern）也叫政策模式（Policy-Pattern）" class="headerlink" title="策略模式（Strategy Pattern）也叫政策模式（Policy Pattern）"></a>策略模式（Strategy Pattern）也叫政策模式（Policy Pattern）</h3><ul>
+<li><p>定义：Define a family of algorithms,encapesulate each one,and make them interchangeable.（定义一组算法，将每个算法封装起来，并且使它们之间可以互换）</p>
+<p>通用类图：</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Context 封装角色</li>
+<li>Strategy 抽象策略角色</li>
+<li>ConcreteStrategy 具体策略角色</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>抽象策略角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface Strategy&#123;</span><br><span class="line">	//策略模式的运算法则</span><br><span class="line">	public void doSomething();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体策略角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteStrategy1 implements Strategy&#123;</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ConcreteStrategy2 implements Strategy&#123;</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>封装角色</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class Context&#123;</span><br><span class="line">	//抽象策略</span><br><span class="line">	private Strategy strategy = null;</span><br><span class="line">	//构造函数设置具体策略</span><br><span class="line">	public Context(Strategy _strategy)&#123;</span><br><span class="line">		this.strategy = _strategy;</span><br><span class="line">	&#125;</span><br><span class="line">	//封装后的策略方法</span><br><span class="line">	public void doAnything()&#123;</span><br><span class="line">		this.strategy.doSomething();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>高层模块（场景类）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		//声明一个具体策略</span><br><span class="line">		Strategy strategy1 = new ConcreteStrategy1();</span><br><span class="line">		//声明上下文对象</span><br><span class="line">		Context context = new Context(strategy1);</span><br><span class="line">		//执行封装后的方法</span><br><span class="line">		context.doAnything();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>算法可以自由切换</li>
+<li>避免使用多重条件判断</li>
+<li>扩展性良好</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>策略类数量增多，每个策略都是一个类，复用的可能性很小，这样一来策略多的话类就很多了</li>
+<li>所有的策略类都需要对外暴露，只有暴露给上层模块，上层模块才知道调用哪些，这与迪米特法则相违背。不过可以用工厂方法模式、代理模式或享元模式来修正这个缺点</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>多个类只有在算法或行为上稍有不同的场景</li>
+<li>算法需要自由切换的场景</li>
+<li>需要屏蔽算法规则的场景（不需要知道太多，知道个名字就可以）</li>
+</ul>
+</li>
+<li><p>注意事项</p>
+<ul>
+<li>如果系统中一个策略家族的具体策略数量超过4个，就需要考虑使用混合模式，解决策略类膨胀和对外暴露的问题，否则后续维护很麻烦</li>
+</ul>
+</li>
+<li><p>扩展</p>
+<ul>
+<li>策略枚举（这个经常用，也简单，不多说了）</li>
+</ul>
+</li>
+<li><p>最佳实践：在实际项目中，一般通过工厂方法来实现策略类的声明</p>
+</li>
+</ul>
+<h3 id="模板方法模式（Template-Method-Pattern）"><a href="#模板方法模式（Template-Method-Pattern）" class="headerlink" title="模板方法模式（Template Method Pattern）"></a>模板方法模式（Template Method Pattern）</h3><ul>
+<li><p>定义：Define the sleleton of an algorithm in an operation,deferring some steps to subclasses.Template Method lets subclasses redefine certain staps of an algorithm without change the algorithm`s structure.（定义一个操作中的算法框架，而将一些步骤延迟到子类中，使得子类可以不改变一些算法的结构即可重定义该算法的某些特定步骤。）</p>
+<p>通用类图：</p>
+</li>
+<li><p>通用代码</p>
+<p>抽象模板类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public abstract class AbstractClass&#123;</span><br><span class="line">	//基本方法</span><br><span class="line">	protect abstract void doSomething();</span><br><span class="line">	//基本方法</span><br><span class="line">	protect abstract void doAnything();</span><br><span class="line">	//模板方法</span><br><span class="line">	public void templateMethod()&#123;</span><br><span class="line">		//调用基本方法完成相关逻辑</span><br><span class="line">		this.doAnything();</span><br><span class="line">		this.doSomething();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体模板类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteClass1 extends AbstractClass&#123;</span><br><span class="line">	//实现基本方法</span><br><span class="line">	protected void doAnything()&#123;...&#125;</span><br><span class="line">	protected void doSomething()&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class ConcreteClass2 extends AbstractClass&#123;</span><br><span class="line">	//实现基本方法</span><br><span class="line">	protected void doAnything()&#123;...&#125;</span><br><span class="line">	protected void doSomething()&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		AbstractClass c1 = new ConcreteClass1();</span><br><span class="line">		AbstractClass c2 = new ConcreteClass2();</span><br><span class="line">		c1.templateMethod();</span><br><span class="line">		c2.templateMethod();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>封装不变的部分，扩展可变的部分</li>
+<li>提取公共部分代码，便于维护</li>
+<li>行为由父类控制，子类实现</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>模板方法颠倒了一般的设计习惯，抽象类定义了部分抽象方法，由子类实现，子类的执行结果却影响了父类的结果，即子类对父类产生了影响，在复杂的项目中会增加阅读难度</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>多个子类有共有的方法，且逻辑基本相同时</li>
+<li>重要、复杂的算法，可以把核心算法设计为模板方法，周边相关细节功能则由各个子类实现</li>
+<li>重构时，模板方法模式是一个经常使用的模式，把相同的代码抽取到父类中，然后通过钩子函数约束其行为</li>
+</ul>
+</li>
+<li><p>扩展</p>
+<ul>
+<li>抽象模板类中加入一个钩子函数，通过外界对它的调用，从而影响模板方法的执行</li>
+</ul>
+</li>
+</ul>
+<h3 id="访问者模式（Visitor-Pattern）"><a href="#访问者模式（Visitor-Pattern）" class="headerlink" title="访问者模式（Visitor Pattern）"></a>访问者模式（Visitor Pattern）</h3><ul>
+<li><p>定义：Represent an operation to be performed onthe elements of an object structure.Visitor lets you define a new operation without changing the classes of the elements on which it operates.（封装一些作用于某种数据结构中的各元素的操作，它可以在不改变数据结构的前提下定义作用于这些元素的新的操作）</p>
+<p>通用类图</p>
+</li>
+<li><p>角色</p>
+<ul>
+<li>Visitor 抽象访问者</li>
+<li>ConcreteVisitor 具体访问者</li>
+<li>Element 抽象元素</li>
+<li>ConcreteElement 具体元素</li>
+<li>ObjectStructure 结构对象</li>
+</ul>
+</li>
+<li><p>通用代码</p>
+<p>抽象元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public abstract class Element&#123;</span><br><span class="line">	//定义业务逻辑</span><br><span class="line">	public abstract void doSomething();</span><br><span class="line">	//允许谁来访问</span><br><span class="line">	public abstract void accept(IVisitor visitor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体元素</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class ConcreteElement1 extends Element&#123;</span><br><span class="line">	//定义业务逻辑</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">	//允许哪个访问者访问</span><br><span class="line">	public void accept(IVisitor visitor)&#123;</span><br><span class="line">		visitor.visit(this);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">public class ConcreteElement2 extends Element&#123;</span><br><span class="line">	//定义业务逻辑</span><br><span class="line">	public void doSomething()&#123;...&#125;</span><br><span class="line">	//允许哪个访问者访问</span><br><span class="line">	public void accept(IVisitor visitor)&#123;</span><br><span class="line">		visitor.visit(this);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>抽象访问者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface IVisitor&#123;</span><br><span class="line">	//可以访问哪些对象</span><br><span class="line">	public void visit(ConcreteElement1 el1);</span><br><span class="line">	public void visit(ConcreteElement2 el2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>具体访问者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Visitor implements IVisitor&#123;</span><br><span class="line">	//访问el1元素</span><br><span class="line">	public void visit(ConcreteElement1 el1)&#123;</span><br><span class="line">		el1.doSomething();</span><br><span class="line">	&#125;</span><br><span class="line">	//访问el2元素</span><br><span class="line">	public void visit(ConcreteElement2 el2)&#123;</span><br><span class="line">		el2.doSomething();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结构对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public class ObjectStructure&#123;</span><br><span class="line">	//对象生成器，这里通过一个工厂方法模式模拟</span><br><span class="line">	public static Element CreateElement()&#123;</span><br><span class="line">		Random rand = new Random();</span><br><span class="line">				if(rand.nextInt(100) &gt; 50)&#123;</span><br><span class="line">					return new ConcreteElement1();</span><br><span class="line">				&#125;else&#123;</span><br><span class="line">					return new ConcreteElement2();</span><br><span class="line">				&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>场景类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Client&#123;</span><br><span class="line">	public static void main(String[] args)&#123;</span><br><span class="line">		for(int i  = 0;i &lt; 10;i ++)&#123;</span><br><span class="line">			//获得元素对象</span><br><span class="line">			Element el = ObjectStructure.createElement();</span><br><span class="line">			//接受访问者访问</span><br><span class="line">			el.accept(new Visitor());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<ul>
+<li><p>优点</p>
+<ul>
+<li>符合单一职责原则</li>
+<li>优秀的扩展性</li>
+<li>灵活性非常高</li>
+</ul>
+</li>
+<li><p>缺点</p>
+<ul>
+<li>具体元素对访问者公布细节</li>
+<li>具体元素变更比较困难</li>
+<li>违背了依赖倒置原则</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景</p>
+<ul>
+<li>一个对象结构包含很多类对象，它们有不同的接口，而相对这些对象实施一些依赖于其具体类的操作，也就是说是用迭代器模式已经不能胜任的场景</li>
+<li>需要对一个对象结构中的对象进行很多不同且不相关的操作，同时要避免让这些操作“污染”这些对象的类</li>
+<li>总的来说就是：业务规则要求遍历多个不同的对象。然后针对访问的对象不同，执行不同的操作。此外，还可以充当拦截器的角色</li>
+</ul>
+</li>
+<li><p>扩展</p>
+<ul>
+<li><p>统计功能</p>
+</li>
+<li><p>多个访问者。多几个接口和实现类而已</p>
+</li>
+<li><p>双分派（Double Dispatch）。是多分派的一个特例。双分派意味着得到执行的操作决定于请求的种类和两个接收者的类型。（Java是一个支持双分派的单分派语言）</p>
+<ul>
+<li>单分派（Single Dispatch）。语言处理一个操作是根据请求者的名称和接收到的参数决定的，在Java中有静态绑定和动态绑定之说，它是依据重载和重写来实现的</li>
+<li>多分派（Multiple Dispatch）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>最佳实践：访问者模式是一种集中规整模式，特别适用于大规模重构的项目，在这一阶段需求已经非常清晰，原系统的功能点也已明确，通过访问者模式可以很容易把一些功能进行梳理，达到最终目的——功能集中化。如：一个统一的报表运算、UI展现等</p>
+</li>
+</ul>
+<h2 id="新模式"><a href="#新模式" class="headerlink" title="新模式"></a>新模式</h2><h3 id="规格模式（Specification-Pattern）"><a href="#规格模式（Specification-Pattern）" class="headerlink" title="规格模式（Specification Pattern）"></a>规格模式（Specification Pattern）</h3><ul>
+<li>组合模式的扩展，目的是描述一个完整的、可组合的规格书，代表的是一个整体，其下的And规格书、Or规格书、Not规格书等都是一个真实的体现，也就是一个局部。（像SQL的where查询里的条件那样的）。此外，去选择局部的规格还需要使用到策略模式。</li>
+</ul>
+<h3 id="对象池模式"><a href="#对象池模式" class="headerlink" title="对象池模式"></a>对象池模式</h3><ul>
+<li>本意是期望一次性初始化所有对象，减少对象在初始化上昂贵的性能开销，从而提高系统整体性能。（比如一些对象的连接池，就是对象池模式的应用）</li>
+</ul>
+<h3 id="雇工模式也叫做仆人模式（Servant-Design-Pattern）"><a href="#雇工模式也叫做仆人模式（Servant-Design-Pattern）" class="headerlink" title="雇工模式也叫做仆人模式（Servant Design Pattern）"></a>雇工模式也叫做仆人模式（Servant Design Pattern）</h3><ul>
+<li>行为模式的一种，是命令模式的一种简化，为一组类提供通用功能，而不需要类实现这些功能，正如雇主手底下有N种不同的雇工一样，相比于命令模式更符合实际需要</li>
+</ul>
+<h3 id="黑板模式（Blackboard-Design-Pattern）"><a href="#黑板模式（Blackboard-Design-Pattern）" class="headerlink" title="黑板模式（Blackboard Design Pattern）"></a>黑板模式（Blackboard Design Pattern）</h3><ul>
+<li><p>是观察者模式的一个扩展。其意图是允许消息的读写同时进行，广泛地交互消息</p>
+</li>
+<li><p>两种常见的实现方式（这两种，有做分布式的小伙伴应该不会陌生）</p>
+<ul>
+<li><p>数据库作黑板</p>
+<ul>
+<li>利用数据充当黑板，生产者更新数据信息，不同的消费者共享数据库中的信息，这是最常见的实现方式。在技术上容易实现，开发量较少，熟悉度较高。缺点是在大量消息和高频率访问的情况下，性能会受到一定影响。</li>
+<li>在该模式下，消息的读取是通过消费者主动“拉取”，因此该模式也叫“拉模式”</li>
+</ul>
+</li>
+<li><p>消息队列作为黑板</p>
+<ul>
+<li>以消息队列作为黑板，通过订阅-发布模型即可实现黑板模式。</li>
+<li>在该模式下，消费者接收到的消息是被主动退送过来的，因此该模式也被称为“推模式”。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="空对象模式（Null-Object-Pattern）"><a href="#空对象模式（Null-Object-Pattern）" class="headerlink" title="空对象模式（Null Object Pattern）"></a>空对象模式（Null Object Pattern）</h3><ul>
+<li>是通过实现一个默认的无意义对象来避免null值出现，简单地说，就是为了避免在程序中出现null值判断而诞生的一种常用设计方法</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/2020/03/22/%E6%97%A5%E5%B8%B8%E4%B8%AD%E7%A2%B0%E5%88%B0%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F/" rel="next" title="日常中碰到的设计模式——模板模式">
+                  <i class="fa fa-chevron-left"></i> 日常中碰到的设计模式——模板模式
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#六大设计原则"><span class="nav-number">1.</span> <span class="nav-text">六大设计原则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单一职责原则"><span class="nav-number">1.1.</span> <span class="nav-text">单一职责原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#里氏替换原则"><span class="nav-number">1.2.</span> <span class="nav-text">里氏替换原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖倒置原则"><span class="nav-number">1.3.</span> <span class="nav-text">依赖倒置原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接口隔离原则"><span class="nav-number">1.4.</span> <span class="nav-text">接口隔离原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#迪米特法则"><span class="nav-number">1.5.</span> <span class="nav-text">迪米特法则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开闭原则"><span class="nav-number">1.6.</span> <span class="nav-text">开闭原则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建类模式"><span class="nav-number">2.</span> <span class="nav-text">创建类模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单例模式（Singleton-Pattern）"><span class="nav-number">2.1.</span> <span class="nav-text">单例模式（Singleton Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工厂方法模式"><span class="nav-number">2.2.</span> <span class="nav-text">工厂方法模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抽象工厂模式（Abstract-Factory-Pattern）"><span class="nav-number">2.3.</span> <span class="nav-text">抽象工厂模式（Abstract Factory Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建造者模式（Builder-Pattern）"><span class="nav-number">2.4.</span> <span class="nav-text">建造者模式（Builder Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原型模式（Prototype-Pattern）"><span class="nav-number">2.5.</span> <span class="nav-text">原型模式（Prototype Pattern）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结构类模式"><span class="nav-number">3.</span> <span class="nav-text">结构类模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#代理模式（Proxy-Pattern）"><span class="nav-number">3.1.</span> <span class="nav-text">代理模式（Proxy Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#适配器模式（Adapter-Pattern）"><span class="nav-number">3.2.</span> <span class="nav-text">适配器模式（Adapter Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#桥梁模式（Bridge-Pattern）又叫做桥接模式"><span class="nav-number">3.3.</span> <span class="nav-text">桥梁模式（Bridge Pattern）又叫做桥接模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#组合模式（Composite-Pattern）也叫合成模式，有时又叫部分-整体模式（Part-Whole）"><span class="nav-number">3.4.</span> <span class="nav-text">组合模式（Composite Pattern）也叫合成模式，有时又叫部分-整体模式（Part-Whole）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#装饰模式（Decorator-Pattern）"><span class="nav-number">3.5.</span> <span class="nav-text">装饰模式（Decorator Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#门面模式（Facade-Pattern）也叫做外观模式"><span class="nav-number">3.6.</span> <span class="nav-text">门面模式（Facade Pattern）也叫做外观模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#享元模式（Flyweight-Pattern）"><span class="nav-number">3.7.</span> <span class="nav-text">享元模式（Flyweight Pattern）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#行为类模式"><span class="nav-number">4.</span> <span class="nav-text">行为类模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#责任链模式"><span class="nav-number">4.1.</span> <span class="nav-text">责任链模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#命令模式"><span class="nav-number">4.2.</span> <span class="nav-text">命令模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解释器模式（Interpreter-Pattern）-（少用）"><span class="nav-number">4.3.</span> <span class="nav-text">解释器模式（Interpreter Pattern） （少用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#迭代器模式（Iterator-Pattern）"><span class="nav-number">4.4.</span> <span class="nav-text">迭代器模式（Iterator Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#中介者模式"><span class="nav-number">4.5.</span> <span class="nav-text">中介者模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备忘录模式（Memento-Pattern）"><span class="nav-number">4.6.</span> <span class="nav-text">备忘录模式（Memento Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#观察者模式（Observer-Pattern）也叫做发布-订阅模式（Publish-subscribe）"><span class="nav-number">4.7.</span> <span class="nav-text">观察者模式（Observer Pattern）也叫做发布/订阅模式（Publish/subscribe）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#状态模式（复杂）"><span class="nav-number">4.8.</span> <span class="nav-text">状态模式（复杂）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#策略模式（Strategy-Pattern）也叫政策模式（Policy-Pattern）"><span class="nav-number">4.9.</span> <span class="nav-text">策略模式（Strategy Pattern）也叫政策模式（Policy Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模板方法模式（Template-Method-Pattern）"><span class="nav-number">4.10.</span> <span class="nav-text">模板方法模式（Template Method Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问者模式（Visitor-Pattern）"><span class="nav-number">4.11.</span> <span class="nav-text">访问者模式（Visitor Pattern）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#新模式"><span class="nav-number">5.</span> <span class="nav-text">新模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#规格模式（Specification-Pattern）"><span class="nav-number">5.1.</span> <span class="nav-text">规格模式（Specification Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象池模式"><span class="nav-number">5.2.</span> <span class="nav-text">对象池模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#雇工模式也叫做仆人模式（Servant-Design-Pattern）"><span class="nav-number">5.3.</span> <span class="nav-text">雇工模式也叫做仆人模式（Servant Design Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#黑板模式（Blackboard-Design-Pattern）"><span class="nav-number">5.4.</span> <span class="nav-text">黑板模式（Blackboard Design Pattern）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#空对象模式（Null-Object-Pattern）"><span class="nav-number">5.5.</span> <span class="nav-text">空对象模式（Null Object Pattern）</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ironion</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ironion</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> v4.0.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.5.0
+  </div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
