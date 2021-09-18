@@ -58,7 +58,7 @@
 <meta property="og:site_name" content="光头王的Blog">
 <meta property="og:description" content="一、引言最近接触了k8s，大概了解了下应用的部署过程，在这里做个记录 二、部署1、前期准备 环境：  macOS 10.15.1  Docker Desktop 2.1.0.4  Kubernetes v1.14.7  要部署的应用：一个简单的springboot应用 2、流程 应用构建成镜像：    首先需要做好pom文件的配置，加入docker插件，配置如下：">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-11-19T15:48:41.382Z">
+<meta property="og:updated_time" content="2021-09-18T06:37:55.022Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://weihong363.github.io/2019/11/19/k8s%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/">
@@ -196,10 +196,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2019-11-19 23:47:10 / Modified: 23:48:41" itemprop="dateCreated datePublished" datetime="2019-11-19T23:47:10+08:00">2019-11-19</time>
+              <time title="Created: 2019-11-19 23:47:10" itemprop="dateCreated datePublished" datetime="2019-11-19T23:47:10+08:00">2019-11-19</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-18 14:37:55" itemprop="dateModified" datetime="2021-09-18T14:37:55+08:00">2021-09-18</time>
+              </span>
 
           
 
@@ -229,27 +235,24 @@
 </ul>
 <a id="more"></a>
 
-<blockquote>
-<plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
-        <version>0.4.13</version>
-        <configuration>
-          <!--这里的imageName根据个人喜好定义-->
-          <imageName>ironion/${project.artifactId}:${project.version}</imageName>
-          <baseImage>java</baseImage>
-          <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
-          <resources>
-            <resource>
-              <targetPath>/</targetPath>
-              <directory>${project.build.directory}</directory>
-              <include>${project.build.finalName}.jar</include>
-            </resource>
-          </resources>
-        </configuration>
-      </plugin>
-</blockquote>
-<ul>
+<pre><code>&lt;plugin&gt;
+   &lt;groupId&gt;com.spotify&lt;/groupId&gt;
+   &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
+   &lt;version&gt;0.4.13&lt;/version&gt;
+   &lt;configuration&gt;
+     &lt;!--这里的imageName根据个人喜好定义--&gt;
+     &lt;imageName&gt;ironion/${project.artifactId}:${project.version}&lt;/imageName&gt;
+     &lt;baseImage&gt;java&lt;/baseImage&gt;
+     &lt;entryPoint&gt;[&quot;java&quot;, &quot;-jar&quot;, &quot;/${project.build.finalName}.jar&quot;]&lt;/entryPoint&gt;
+     &lt;resources&gt;
+       &lt;resource&gt;
+         &lt;targetPath&gt;/&lt;/targetPath&gt;
+         &lt;directory&gt;${project.build.directory}&lt;/directory&gt;
+         &lt;include&gt;${project.build.finalName}.jar&lt;/include&gt;
+       &lt;/resource&gt;
+     &lt;/resources&gt;
+   &lt;/configuration&gt;
+ &lt;/plugin&gt;</code></pre><ul>
 <li><p>接着写好Dockerfile文件，配置构件镜像的命令（还有其他方法，如docker-compose，这里不做扩展），文件内容如下：</p>
 <blockquote>
 <p>FROM java:8</p>
