@@ -413,7 +413,7 @@ public static void main(String[] args) {
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/11/19/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/11/19/k8s%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -427,7 +427,87 @@ public static void main(String[] args) {
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2019/11/19/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">k8s集群搭建记录</a>
+            <a href="/2019/11/19/k8s%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">k8s应用部署过程记录</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2019-11-19 23:47:10 / Modified: 23:48:41" itemprop="dateCreated datePublished" datetime="2019-11-19T23:47:10+08:00">2019-11-19</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>最近接触了k8s，大概了解了下应用的部署过程，在这里做个记录</p>
+<h3 id="二、部署"><a href="#二、部署" class="headerlink" title="二、部署"></a>二、部署</h3><h4 id="1、前期准备"><a href="#1、前期准备" class="headerlink" title="1、前期准备"></a>1、前期准备</h4><ol>
+<li><p>环境：</p>
+<p> macOS 10.15.1</p>
+<p> Docker Desktop 2.1.0.4</p>
+<p> Kubernetes v1.14.7</p>
+</li>
+<li><p>要部署的应用：一个简单的springboot应用</p>
+<h4 id="2、流程"><a href="#2、流程" class="headerlink" title="2、流程"></a>2、流程</h4></li>
+<li><p>应用构建成镜像：</p>
+</li>
+</ol>
+<ul>
+<li>首先需要做好pom文件的配置，加入docker插件，配置如下：</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/11/19/k8s%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/11/15/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ironion">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="光头王的Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/15/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">k8s集群搭建记录</a>
         </h1>
 
         <div class="post-meta">
@@ -437,14 +517,14 @@ public static void main(String[] args) {
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-11-19 23:48:41" itemprop="dateCreated datePublished" datetime="2019-11-19T23:48:41+08:00">2019-11-19</time>
+              <time title="Created: 2019-11-15 13:46:12" itemprop="dateCreated datePublished" datetime="2019-11-15T13:46:12+08:00">2019-11-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-18 14:19:28" itemprop="dateModified" datetime="2021-09-18T14:19:28+08:00">2021-09-18</time>
+                <time title="Modified: 2021-09-18 14:22:10" itemprop="dateModified" datetime="2021-09-18T14:22:10+08:00">2021-09-18</time>
               </span>
 
           
@@ -630,86 +710,6 @@ sysctl -n net.bridge.bridge-nf-call-ip6tables</code></pre></blockquote>
     systemctl restart kubelet</code></pre><p>参考内容来源：</p>
 <p><a href="https://www.cnblogs.com/weifeng1463/p/12794443.html" target="_blank" rel="noopener">https://www.cnblogs.com/weifeng1463/p/12794443.html</a><br><a href="https://blog.csdn.net/Andriy_dangli/article/details/85062983" target="_blank" rel="noopener">https://blog.csdn.net/Andriy_dangli/article/details/85062983</a></p>
 
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/11/19/k8s%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Ironion">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="光头王的Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/19/k8s%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">k8s应用部署过程记录</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2019-11-19 23:47:10 / Modified: 23:48:41" itemprop="dateCreated datePublished" datetime="2019-11-19T23:47:10+08:00">2019-11-19</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>最近接触了k8s，大概了解了下应用的部署过程，在这里做个记录</p>
-<h3 id="二、部署"><a href="#二、部署" class="headerlink" title="二、部署"></a>二、部署</h3><h4 id="1、前期准备"><a href="#1、前期准备" class="headerlink" title="1、前期准备"></a>1、前期准备</h4><ol>
-<li><p>环境：</p>
-<p> macOS 10.15.1</p>
-<p> Docker Desktop 2.1.0.4</p>
-<p> Kubernetes v1.14.7</p>
-</li>
-<li><p>要部署的应用：一个简单的springboot应用</p>
-<h4 id="2、流程"><a href="#2、流程" class="headerlink" title="2、流程"></a>2、流程</h4></li>
-<li><p>应用构建成镜像：</p>
-</li>
-</ol>
-<ul>
-<li>首先需要做好pom文件的配置，加入docker插件，配置如下：</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/11/19/k8s%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
       
     </div>
 
