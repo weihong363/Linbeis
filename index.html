@@ -648,6 +648,241 @@ sysctl -n net.bridge.bridge-nf-call-ip6tables</code></pre></blockquote>
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/11/19/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95%E7%9A%84%E5%89%AF%E6%9C%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ironion">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="光头王的Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/19/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95%E7%9A%84%E5%89%AF%E6%9C%AC/" class="post-title-link" itemprop="url">k8s集群搭建记录</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-11-19 23:48:41" itemprop="dateCreated datePublished" datetime="2019-11-19T23:48:41+08:00">2019-11-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-18 14:19:28" itemprop="dateModified" datetime="2021-09-18T14:19:28+08:00">2021-09-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>最近搭了个k8s集群，这里记录下过程中遇到的一些问题。</p>
+<h3 id="二、集群搭建"><a href="#二、集群搭建" class="headerlink" title="二、集群搭建"></a>二、集群搭建</h3><h4 id="1、前期准备"><a href="#1、前期准备" class="headerlink" title="1、前期准备"></a>1、前期准备</h4><ol>
+<li><p>环境：</p>
+<p> CentOS 8(2 CORE， 2G， master和node各一台)</p>
+<p> Docker-CE 20.10.8</p>
+<p> Kubernetes v1.22.1</p>
+</li>
+</ol>
+<h4 id="2、流程"><a href="#2、流程" class="headerlink" title="2、流程"></a>2、流程</h4><h4 id="1-服务器环境初始化："><a href="#1-服务器环境初始化：" class="headerlink" title="1. 服务器环境初始化："></a>1. 服务器环境初始化：</h4><ul>
+<li><h4 id="首先得对集群中的服务器都做好一些必须的配置，如："><a href="#首先得对集群中的服务器都做好一些必须的配置，如：" class="headerlink" title="首先得对集群中的服务器都做好一些必须的配置，如："></a>首先得对集群中的服务器都做好一些必须的配置，如：</h4><blockquote>
+<p>1.保证集群各个节点里的网络是互通的（这里各个服务器都是桥接的虚拟机，所以这点没问题）<br>2.开放节点端口</p>
+</blockquote>
+<h3 id="kube-master节点端口"><a href="#kube-master节点端口" class="headerlink" title="kube-master节点端口"></a>kube-master节点端口</h3></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>协议</th>
+<th>方向</th>
+<th>端口</th>
+<th>目的</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TCP</td>
+<td>Inbound</td>
+<td>6443*</td>
+<td>kube-api-server</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>Inbound</td>
+<td>2379-2380</td>
+<td>etcd API</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>Inbound</td>
+<td>10250</td>
+<td>Kubelet API</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>Inbound</td>
+<td>10251</td>
+<td>kube-scheduler</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>Inbound</td>
+<td>10252</td>
+<td>kube-scheduler</td>
+</tr>
+</tbody></table>
+<h3 id="kube-node节点端口"><a href="#kube-node节点端口" class="headerlink" title="kube-node节点端口"></a>kube-node节点端口</h3><table>
+<thead>
+<tr>
+<th>协议</th>
+<th>方向</th>
+<th>端口</th>
+<th>目的</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TCP</td>
+<td>Inbound</td>
+<td>10250</td>
+<td>Kubelet API</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>Inbound</td>
+<td>30000-32767</td>
+<td>NodePort Services</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>#查看防火墙状态</p>
+<pre><code>firewall-cmd --state</code></pre><p>#查看防火墙开放的所有端口</p>
+<pre><code>firewall-cmd --zone=public --list-ports</code></pre><p>#开放端口命令</p>
+<pre><code>firewall-cmd --zone=public --add-port=5672/tcp --permanent</code></pre><p>#批量开放端口</p>
+<pre><code>firewall-cmd --permanent --zone=public --add-port=100-500/tcp</code></pre><p>#重新加载防火墙，配置完端口一定要执行重新加载才能生效</p>
+<pre><code>firewall-cmd --reload</code></pre></blockquote>
+<ul>
+<li><h4 id="配置主机互信："><a href="#配置主机互信：" class="headerlink" title="配置主机互信："></a>配置主机互信：</h4><blockquote>
+<p>#在所有的节点配置hosts的映射（这里的IP根据实际情况去调整）<br>#所有节点执行</p>
+<pre><code>cat &gt;&gt; /etc/hosts &lt;&lt;EOF
+172.16.5.202 master
+172.16.5.203 node01
+EOF</code></pre></blockquote>
+</li>
+<li><h4 id="配置ssh密钥："><a href="#配置ssh密钥：" class="headerlink" title="配置ssh密钥："></a>配置ssh密钥：</h4><blockquote>
+<p>#在master节点生成密钥，然后发布到各个节点</p>
+<p>#master节点执行</p>
+<p>#生成ssh密钥，直接一路回车</p>
+<pre><code>ssh-keygen -t rsa</code></pre><p>#复制刚刚生成的密钥到各节点可信列表中，需分别输入各主机密码</p>
+<pre><code>ssh-copy-id root@master
+ssh-copy-id root@node01</code></pre><p>#配置完成后使用下面命令查看是否可以登录到目标服务器</p>
+<pre><code>ssh &apos;root@master&apos;</code></pre><p>#退出</p>
+<p>   exit</p>
+</blockquote>
+</li>
+<li><h4 id="禁用SWAP："><a href="#禁用SWAP：" class="headerlink" title="禁用SWAP："></a>禁用SWAP：</h4><p>禁用SWAP可以提升性能（内存不足时会用硬盘当额外内存，但硬盘IO速度相比内存差距较大，所以这个禁了会提高性能）</p>
+<blockquote>
+<p>#所有节点服务器执行</p>
+<pre><code>swapoff -a
+sed -i &apos;s/.*swap.*/#&amp;/&apos; /etc/fstab</code></pre></blockquote>
+</li>
+<li><h4 id="关闭SELINUX："><a href="#关闭SELINUX：" class="headerlink" title="关闭SELINUX："></a>关闭SELINUX：</h4><p>若不禁用，在kubectl挂载时可能会报权限拒绝，将它设为permissive会提示warning信息，设成disable就直接禁掉</p>
+<blockquote>
+<p>#所有节点服务器执行</p>
+<pre><code>setenforce 0
+sed -i &apos;s/^SELINUX=.*/SELINUX=disabled/&apos; /etc/selinux/config</code></pre></blockquote>
+</li>
+<li><h4 id="设置时区和同步时间："><a href="#设置时区和同步时间：" class="headerlink" title="设置时区和同步时间："></a>设置时区和同步时间：</h4><blockquote>
+<p>#所有节点服务器执行</p>
+<p>#设置时区</p>
+<pre><code>timedatectl set-timezone Asia/Shanghai
+systemctl enable --now chronyd</code></pre><p>#验证设置是否成功</p>
+<pre><code>date</code></pre><p>#查看同步状态</p>
+<pre><code>timedatectl status</code></pre><p>#输出结果中显示下列属性证明时钟同步正常</p>
+<pre><code>System clock synchronized: yes
+         NTP service: active</code></pre><p>#将当前的UTC时间写入硬件时钟</p>
+<pre><code>timedatectl set-local-rtc 0</code></pre><p>#重启依赖于系统时间的服务</p>
+<pre><code>systemctl restart rsyslog &amp;&amp; systemctl restart crond</code></pre></blockquote>
+</li>
+<li><h4 id="开机加载网络模块："><a href="#开机加载网络模块：" class="headerlink" title="开机加载网络模块："></a>开机加载网络模块：</h4><blockquote>
+<p>#所有节点服务器执行</p>
+<pre><code>lsmod | grep overlay
+lsmod | grep br_netfilter</code></pre></blockquote>
+</li>
+<li><h4 id="使桥接流量对iptables可见："><a href="#使桥接流量对iptables可见：" class="headerlink" title="使桥接流量对iptables可见："></a>使桥接流量对iptables可见：</h4><blockquote>
+<p>#所有节点服务器执行</p>
+<pre><code>cat &gt; /etc/sysctl.d/k8s.conf &lt;&lt;EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+
+sysctl --system</code></pre><p>#验证是否生效，下面两个命令结果需均返回 1</p>
+<pre><code>sysctl -n net.bridge.bridge-nf-call-iptables
+sysctl -n net.bridge.bridge-nf-call-ip6tables</code></pre></blockquote>
+</li>
+<li><h4 id="安装docker："><a href="#安装docker：" class="headerlink" title="安装docker："></a>安装docker：</h4><p>这个没啥好记录的，略过</p>
+</li>
+</ul>
+<h4 id="3-搭建k8s集群上的服务"><a href="#3-搭建k8s集群上的服务" class="headerlink" title="3.搭建k8s集群上的服务"></a>3.搭建k8s集群上的服务</h4><p>见链接<br><a href="https://www.cnblogs.com/zhang-guansheng/p/13566060.html#%E6%B7%BB%E5%8A%A0kubernetes%E6%BA%90" target="_blank" rel="noopener">https://www.cnblogs.com/zhang-guansheng/p/13566060.html#%E6%B7%BB%E5%8A%A0kubernetes%E6%BA%90</a></p>
+<h4 id="3、过程中遇到的问题"><a href="#3、过程中遇到的问题" class="headerlink" title="3、过程中遇到的问题"></a>3、过程中遇到的问题</h4><h4 id="1-集群搭建完后，pod一直处于ContainerCreating状态"><a href="#1-集群搭建完后，pod一直处于ContainerCreating状态" class="headerlink" title="1.集群搭建完后，pod一直处于ContainerCreating状态"></a>1.集群搭建完后，pod一直处于ContainerCreating状态</h4><pre><code>describe pod显示 &quot;open /run/flannel/subnet.env: no such file or directory&quot;，
+这说明flannel装的时候没安装好，查看下/run/flannel/subnet.env文件是否存在，不存在就去新
+建一个，内容如下：
+    FLANNEL_NETWORK=10.244.0.0/16
+    FLANNEL_SUBNET=10.244.0.1/24
+    FLANNEL_MTU=1450
+    FLANNEL_IPMASQ=true
+然后保存文件重新建pod即可</code></pre><h4 id="2-k8s和docker的cgroup不一致问题"><a href="#2-k8s和docker的cgroup不一致问题" class="headerlink" title="2.k8s和docker的cgroup不一致问题"></a>2.k8s和docker的cgroup不一致问题</h4><pre><code>安装k8s的过程中可能会出现以下问题：
+    failed to create kubelet: misconfiguration: kubelet cgroup driver: &quot;cgroupfs&quot; is different from docker cgroup driver: &quot;systemd&quot;
+明显是docker的Cgroup Driver和kubelet的Cgroup Driver不一致导致的，我们可以：
+1. 修改docker的Cgroup Driver
+修改/etc/docker/daemon.json文件
+    {
+         &quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;]
+    }
+保存后重启docker
+    systemctl daemon-reload
+    systemctl restart docker
+2. 修改kubelet的Cgroup Driver
+修改/etc/systemd/system/kubelet.service.d/10-kubeadm.conf文件，增加--cgroup-driver=cgroupfs
+    Environment=&quot;KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --cgroup-driver=cgroupfs&quot;
+保存后重启kubectl
+    systemctl daemon-reload
+    systemctl restart kubelet</code></pre><p>参考内容来源：</p>
+<p><a href="https://www.cnblogs.com/weifeng1463/p/12794443.html" target="_blank" rel="noopener">https://www.cnblogs.com/weifeng1463/p/12794443.html</a><br><a href="https://blog.csdn.net/Andriy_dangli/article/details/85062983" target="_blank" rel="noopener">https://blog.csdn.net/Andriy_dangli/article/details/85062983</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/11/19/k8s%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1010,78 +1245,6 @@ sysctl -n net.bridge.bridge-nf-call-ip6tables</code></pre></blockquote>
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/08/27/ThreadPoolExcutor%E6%BA%90%E7%A0%81%E4%B8%AA%E4%BA%BA%E6%B5%85%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Ironion">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="光头王的Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/08/27/ThreadPoolExcutor%E6%BA%90%E7%A0%81%E4%B8%AA%E4%BA%BA%E6%B5%85%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/" class="post-title-link" itemprop="url">ThreadPoolExcutor源码个人浅析（二）</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-08-27 11:59:28" itemprop="dateCreated datePublished" datetime="2019-08-27T11:59:28+08:00">2019-08-27</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="一、源码浅析"><a href="#一、源码浅析" class="headerlink" title="一、源码浅析"></a>一、源码浅析</h3><h4 id="（1）构造方法"><a href="#（1）构造方法" class="headerlink" title="（1）构造方法"></a>（1）构造方法</h4><p>ThreadPoolExcutor共有四种构造方法，分别为：</p>
-<ul>
-<li>ThreadPoolExecutor(int corePoolSize,int maximumPoolSize,long keepAliveTime,TimeUnit unit,BlockingQueue<Runnable> workQueue)</Runnable></li>
-<li>ThreadPoolExecutor(int corePoolSize,int maximumPoolSize,long keepAliveTime,TimeUnit unit,BlockingQueue<Runnable> workQueue,ThreadFactory threadFactory)</Runnable></li>
-<li>ThreadPoolExecutor(int corePoolSize,int maximumPoolSize,long keepAliveTime,TimeUnit unit,BlockingQueue<Runnable> workQueue,RejectedExecutionHandler handler)</Runnable></li>
-<li>ThreadPoolExecutor(int corePoolSize,int maximumPoolSize,long keepAliveTime,TimeUnit unit,BlockingQueue<Runnable> workQueue,ThreadFactory threadFactory,RejectedExecutionHandler handler)</Runnable></li>
-</ul>
-<p>以下将结合代码和注释一一分析：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/08/27/ThreadPoolExcutor%E6%BA%90%E7%A0%81%E4%B8%AA%E4%BA%BA%E6%B5%85%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1130,7 +1293,7 @@ sysctl -n net.bridge.bridge-nf-call-ip6tables</code></pre></blockquote>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
