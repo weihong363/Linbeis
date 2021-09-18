@@ -51,17 +51,17 @@
   };
 </script>
 
-  <meta name="description" content="一、引言最近搭了个k8s集群，这里记录下过程中遇到的一些问题。 二、集群搭建1、前期准备 环境：  CentOS 8(2 CORE， 2G， master和node各一台)  Docker-CE 20.10.8  Kubernetes v1.22.1   2、流程1. 服务器环境初始化： 首先得对集群中的服务器都做好一些必须的配置，如： 1.保证集群各个节点里的网络是互通的（这里各个服务器都是桥接">
+  <meta name="description" content="一、引言最近搭了个k8s集群，这里记录下过程中遇到的一些问题。 二、集群搭建1、前期准备 环境： CentOS 8(2 CORE， 2G， master和node各一台) Docker-CE 20.10.8 Kubernetes v1.22.1   2、流程1. 服务器环境初始化： 首先得对集群中的服务器都做好一些必须的配置，如： 1.保证集群各个节点里的网络是互通的（这里各个服务器都是桥接的虚拟">
 <meta property="og:type" content="article">
 <meta property="og:title" content="k8s集群搭建记录">
-<meta property="og:url" content="https:&#x2F;&#x2F;weihong363.github.io&#x2F;2019&#x2F;11&#x2F;15&#x2F;k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95&#x2F;index.html">
+<meta property="og:url" content="https:&#x2F;&#x2F;weihong363.github.io&#x2F;2021&#x2F;09&#x2F;18&#x2F;k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95&#x2F;index.html">
 <meta property="og:site_name" content="光头王的Blog">
-<meta property="og:description" content="一、引言最近搭了个k8s集群，这里记录下过程中遇到的一些问题。 二、集群搭建1、前期准备 环境：  CentOS 8(2 CORE， 2G， master和node各一台)  Docker-CE 20.10.8  Kubernetes v1.22.1   2、流程1. 服务器环境初始化： 首先得对集群中的服务器都做好一些必须的配置，如： 1.保证集群各个节点里的网络是互通的（这里各个服务器都是桥接">
+<meta property="og:description" content="一、引言最近搭了个k8s集群，这里记录下过程中遇到的一些问题。 二、集群搭建1、前期准备 环境： CentOS 8(2 CORE， 2G， master和node各一台) Docker-CE 20.10.8 Kubernetes v1.22.1   2、流程1. 服务器环境初始化： 首先得对集群中的服务器都做好一些必须的配置，如： 1.保证集群各个节点里的网络是互通的（这里各个服务器都是桥接的虚拟">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-09-18T06:22:10.085Z">
+<meta property="og:updated_time" content="2021-09-18T06:34:51.575Z">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://weihong363.github.io/2019/11/15/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/">
+<link rel="canonical" href="https://weihong363.github.io/2021/09/18/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/">
 
 
 <script id="page-configurations">
@@ -174,7 +174,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2019/11/15/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/">
+    <link itemprop="mainEntityOfPage" href="https://weihong363.github.io/2021/09/18/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -196,16 +196,10 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2019-11-15 13:46:12" itemprop="dateCreated datePublished" datetime="2019-11-15T13:46:12+08:00">2019-11-15</time>
+              <time title="Created: 2021-09-18 14:33:46 / Modified: 14:34:51" itemprop="dateCreated datePublished" datetime="2021-09-18T14:33:46+08:00">2021-09-18</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-18 14:22:10" itemprop="dateModified" datetime="2021-09-18T14:22:10+08:00">2021-09-18</time>
-              </span>
 
           
 
@@ -221,9 +215,9 @@
         <h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>最近搭了个k8s集群，这里记录下过程中遇到的一些问题。</p>
 <h3 id="二、集群搭建"><a href="#二、集群搭建" class="headerlink" title="二、集群搭建"></a>二、集群搭建</h3><h4 id="1、前期准备"><a href="#1、前期准备" class="headerlink" title="1、前期准备"></a>1、前期准备</h4><ol>
 <li><p>环境：</p>
-<p> CentOS 8(2 CORE， 2G， master和node各一台)</p>
-<p> Docker-CE 20.10.8</p>
-<p> Kubernetes v1.22.1</p>
+<p>CentOS 8(2 CORE， 2G， master和node各一台)</p>
+<p>Docker-CE 20.10.8</p>
+<p>Kubernetes v1.22.1</p>
 </li>
 </ol>
 <h4 id="2、流程"><a href="#2、流程" class="headerlink" title="2、流程"></a>2、流程</h4><h4 id="1-服务器环境初始化："><a href="#1-服务器环境初始化：" class="headerlink" title="1. 服务器环境初始化："></a>1. 服务器环境初始化：</h4><ul>
@@ -402,17 +396,14 @@ sysctl -n net.bridge.bridge-nf-call-ip6tables</code></pre></blockquote>
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
-                <a href="/2019/10/22/Spring%20Cloud%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89/" rel="next" title="Spring Cloud初探（一）">
-                  <i class="fa fa-chevron-left"></i> Spring Cloud初探（一）
+                <a href="/2020/07/27/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="next" title="《设计模式之禅》学习后的整理归纳">
+                  <i class="fa fa-chevron-left"></i> 《设计模式之禅》学习后的整理归纳
                 </a>
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/2019/11/19/k8s%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/" rel="prev" title="k8s应用部署过程记录">
-                  k8s应用部署过程记录 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
       </footer>
