@@ -51,14 +51,14 @@
   };
 </script>
 
-  <meta name="description" content="一、引言最近搭了个k8s集群，这里记录下过程中遇到的一些问题。 二、集群搭建1、前期准备 环境： CentOS 8(2 CORE， 2G， master和node各一台) Docker-CE 20.10.8 Kubernetes v1.22.1   2、流程1. 服务器环境初始化： 首先得对集群中的服务器都做好一些必须的配置，如： 1.保证集群各个节点里的网络是互通的（这里各个服务器都是桥接的虚拟">
+  <meta name="description" content="一、引言最近搭了个k8s集群，这里记录下过程中遇到的一些问题。 二、集群搭建1、前期准备 环境： CentOS 8(2 CORE， 2G， master和node各一台) Docker-CE 20.10.8 Kubernetes v1.22.1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="k8s集群搭建记录">
 <meta property="og:url" content="https:&#x2F;&#x2F;weihong363.github.io&#x2F;2021&#x2F;09&#x2F;18&#x2F;k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95&#x2F;index.html">
 <meta property="og:site_name" content="光头王的Blog">
-<meta property="og:description" content="一、引言最近搭了个k8s集群，这里记录下过程中遇到的一些问题。 二、集群搭建1、前期准备 环境： CentOS 8(2 CORE， 2G， master和node各一台) Docker-CE 20.10.8 Kubernetes v1.22.1   2、流程1. 服务器环境初始化： 首先得对集群中的服务器都做好一些必须的配置，如： 1.保证集群各个节点里的网络是互通的（这里各个服务器都是桥接的虚拟">
+<meta property="og:description" content="一、引言最近搭了个k8s集群，这里记录下过程中遇到的一些问题。 二、集群搭建1、前期准备 环境： CentOS 8(2 CORE， 2G， master和node各一台) Docker-CE 20.10.8 Kubernetes v1.22.1">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-09-18T06:34:51.575Z">
+<meta property="og:updated_time" content="2021-09-18T06:36:34.525Z">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://weihong363.github.io/2021/09/18/k8s%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/">
@@ -198,7 +198,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-18 14:33:46 / Modified: 14:34:51" itemprop="dateCreated datePublished" datetime="2021-09-18T14:33:46+08:00">2021-09-18</time>
+              <time title="Created: 2021-09-18 14:33:46 / Modified: 14:36:34" itemprop="dateCreated datePublished" datetime="2021-09-18T14:33:46+08:00">2021-09-18</time>
             </span>
 
           
@@ -220,6 +220,8 @@
 <p>Kubernetes v1.22.1</p>
 </li>
 </ol>
+<a id="more"></a>
+
 <h4 id="2、流程"><a href="#2、流程" class="headerlink" title="2、流程"></a>2、流程</h4><h4 id="1-服务器环境初始化："><a href="#1-服务器环境初始化：" class="headerlink" title="1. 服务器环境初始化："></a>1. 服务器环境初始化：</h4><ul>
 <li><h4 id="首先得对集群中的服务器都做好一些必须的配置，如："><a href="#首先得对集群中的服务器都做好一些必须的配置，如：" class="headerlink" title="首先得对集群中的服务器都做好一些必须的配置，如："></a>首先得对集群中的服务器都做好一些必须的配置，如：</h4><blockquote>
 <p>1.保证集群各个节点里的网络是互通的（这里各个服务器都是桥接的虚拟机，所以这点没问题）<br>2.开放节点端口</p>
